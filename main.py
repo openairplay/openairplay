@@ -16,8 +16,10 @@ import sys
 
 if sys.version_info >= (3, 3):
     import rython3
+    print("Using Rython3: " + str(sys.version_info))
 elif sys.version_info >= (2, 7):
     import rython2
+    print("Using Rython2: " + str(sys.version_info))
 else: sys.exit("This program requires Python 2.7+ or 3.3+, please install either of those versions.")
 
 from PyQt4 import QtCore, QtGui
@@ -62,21 +64,24 @@ class Window(QtGui.QDialog):
 
     def closeEvent(self, event):
         if self.trayIcon.isVisible():
-            QtGui.QMessageBox.information(self, "Systray",
+            if not settings.value('promptOnClose_systray'):
+                QtGui.QMessageBox.information(self, "Systray",
                     "The program will keep running in the system tray. "
                     "To terminate the program, choose <b>Quit</b> in "
                     "the menu of the system tray airplay icon.")
             self.hide()
             event.ignore()
+            print("Closing to System Tray")
         else:
-            sys.exit()
+            print("Tray Icon not visible, quitting.")
+            sys.exit("Exit: No system tray instance to close to.")
 
     def setIcon(self, index):
         icon = self.iconComboBox.itemIcon(index)
         self.trayIcon.setIcon(icon)
         self.setWindowIcon(icon)
 
-        self.trayIcon.setToolTip(self.iconComboBox.itemText(index))
+        self.trayIcon.setToolTip("Ubuntu Airplay")
 
     def iconActivated(self, reason):
         if reason in (QtGui.QSystemTrayIcon.Trigger, QtGui.QSystemTrayIcon.DoubleClick):
@@ -94,9 +99,8 @@ class Window(QtGui.QDialog):
                 self.durationSpinBox.value() * 1000)
 
     def messageClicked(self):
-        QtGui.QMessageBox.information(None, "Systray",
-                "Sorry, I already gave what help I could.\nMaybe you should "
-                "try asking a human?")
+        QtGui.QMessageBox.information(None, "Ubuntu Airplay Help", "If you need help with Ubuntu Airplay, "
+        "see the Github page to file bug reports or see further documentation and help.")
 
     def createIconGroupBox(self):
         self.iconGroupBox = QtGui.QGroupBox("Tray Icon")
@@ -104,8 +108,8 @@ class Window(QtGui.QDialog):
         self.iconLabel = QtGui.QLabel("Icon:")
 
         self.iconComboBox = QtGui.QComboBox()
-        self.iconComboBox.addItem(QtGui.QIcon('images/Airplay-Dark'), "Dark Style")
-        self.iconComboBox.addItem(QtGui.QIcon('images/Airplay-Light'), "Light Style")
+        self.iconComboBox.addItem(QtGui.QIcon('images/Airplay-Light'), "Black Icon")
+        self.iconComboBox.addItem(QtGui.QIcon('images/Airplay-Dark'), "White Icon")
 
         self.showIconCheckBox = QtGui.QCheckBox("Show tray icon")
         self.showIconCheckBox.setChecked(True)
@@ -203,4 +207,5 @@ if __name__ == '__main__':
 
     window = Window()
     window.show()
+    print("Goodbye")
     sys.exit(app.exec_())
