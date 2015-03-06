@@ -4,6 +4,27 @@ ubuntu-airplay
 I have always been annoyed about how iOS, Mac OSX, and all of Apples proprietary hardware/software has inhibited so many of
 us technology savvy people.  
 
+Project Status:
+---
+Currently GUI only, no Airplay support.
+Working on:
+- Ruby to Python for use of the Airplay libraries by Bruno Aguirre, `elcuervo`.
+- Figuring out how to use those libraries in Python.  
+
+Project Details:
+---
+Right now it's Python 3 using the QT system from PyQt4.  
+It is made to support Ubuntu only, but I'm trying to make this thing OS-independent.
+
+Requirements:
+---
+- PyQt4
+- Rython
+  - Rython for Python 2 is `pip install rython`
+  - Rython for Python 3 is included with this project from https://github.com/fbauer/rython
+    - Use `python3 setup.py install` from the rython-master directory to install it, `pip3 install rython` does not work properly.
+
+
 Why I'm doing this:
 ---
 I go to a school where everyone has iPads as their learning tool, which are horrid for coding/programming and software
@@ -23,16 +44,3 @@ and allow you to:
 - Play a video
 - Stream Music  
 And whatever else the users and developers of this project wish it to be.
-
-Project Details:
----
-Right now it's Python 3 using the QT system from PyQt4.  
-It is made to support Ubuntu only, but I'm trying to make this thing OS-independent.
-
-Requirements:
----
-- PyQt4
-- Rython
-  - Rython for Python 2 is `pip install rython`
-  - Rython for Python 3 is included with this project from https://github.com/fbauer/rython
-    - Use `python3 setup.py install` from the rython-master directory to install it, `pip3 install rython` does not work properly.
