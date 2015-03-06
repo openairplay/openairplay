@@ -14,6 +14,7 @@ sip.setapi('QVariant', 2)
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import QSettings
 
+settings = QSettings('ubuntu-airplay')
 
 class Window(QtGui.QDialog):
     def __init__(self):
