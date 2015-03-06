@@ -39,7 +39,7 @@ class Window(QtGui.QDialog):
         self.iconComboBox.setCurrentIndex(1)
         self.trayIcon.show()
 
-        self.setWindowTitle("Airplay Settings")
+        self.setWindowTitle("Ubuntu Airplay Settings")
         self.resize(400, 300)
 
     def setVisible(self, visible):

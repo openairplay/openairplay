@@ -13,7 +13,7 @@ Working on:
 
 Project Details:
 ---
-Right now it's Python 3 using the QT system from PyQt4.  
+Right now it's Python 2 & 3 using the QT system from PyQt4.  
 It is made to support Ubuntu only, but I'm trying to make this thing OS-independent.
 
 Requirements:
