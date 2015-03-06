@@ -12,6 +12,8 @@ import sip
 sip.setapi('QVariant', 2)
 
 from PyQt4 import QtCore, QtGui
+from PyQt4.QtCore import QSettings
+
 
 class Window(QtGui.QDialog):
     def __init__(self):
@@ -158,17 +160,13 @@ class Window(QtGui.QDialog):
         self.messageGroupBox.setLayout(messageLayout)
 
     def createActions(self):
-        self.minimizeAction = QtGui.QAction("Mi&nimize", self,
-                triggered=self.hide)
+        self.minimizeAction = QtGui.QAction("Mi&nimize", self, triggered=self.hide)
 
-        self.maximizeAction = QtGui.QAction("Ma&ximize", self,
-                triggered=self.showMaximized)
+        self.maximizeAction = QtGui.QAction("Ma&ximize", self, triggered=self.showMaximized)
 
-        self.restoreAction = QtGui.QAction("&Restore", self,
-                triggered=self.showNormal)
+        self.restoreAction = QtGui.QAction("&Restore", self, triggered=self.showNormal)
 
-        self.quitAction = QtGui.QAction("&Quit", self,
-                triggered=QtGui.qApp.quit)
+        self.quitAction = QtGui.QAction("&Quit", self, triggered=QtGui.qApp.quit)
 
     def createTrayIcon(self):
          self.trayIconMenu = QtGui.QMenu(self)
@@ -180,7 +178,6 @@ class Window(QtGui.QDialog):
 
          self.trayIcon = QtGui.QSystemTrayIcon(self)
          self.trayIcon.setContextMenu(self.trayIconMenu)
-
 
 if __name__ == '__main__':
 
