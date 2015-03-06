@@ -39,7 +39,7 @@ class Window(QtGui.QDialog):
         self.iconComboBox.setCurrentIndex(1)
         self.trayIcon.show()
 
-        self.setWindowTitle("Systray")
+        self.setWindowTitle("Airplay Settings")
         self.resize(400, 300)
 
     def setVisible(self, visible):
@@ -56,6 +56,8 @@ class Window(QtGui.QDialog):
                     "context menu of the system tray entry.")
             self.hide()
             event.ignore()
+        else:
+            self.Quit()
 
     def setIcon(self, index):
         icon = self.iconComboBox.itemIcon(index)

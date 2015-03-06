@@ -1,0 +1,10 @@
+LICENSE.txt
+MANIFEST.in
+README
+README.txt
+setup.py
+rython/__init__.py
+rython.egg-info/PKG-INFO
+rython.egg-info/SOURCES.txt
+rython.egg-info/dependency_links.txt
+rython.egg-info/top_level.txt

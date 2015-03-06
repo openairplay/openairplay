@@ -21,10 +21,18 @@ and allow you to:
 - Stream your desktop
 - Send a photo/picture
 - Play a video
-- Stream Music
+- Stream Music  
 And whatever else the users and developers of this project wish it to be.
 
 Project Details:
 ---
 Right now it's Python 3 using the QT system from PyQt4.  
 It is made to support Ubuntu only, but I'm trying to make this thing OS-independent.
+
+Requirements:
+---
+- PyQt4
+- Rython
+  - Rython for Python 2 is `pip install rython`
+  - Rython for Python 3 is included with this project from https://github.com/fbauer/rython
+    - Use `python3 setup.py install` from the rython-master directory to install it, `pip3 install rython` does not work properly.
