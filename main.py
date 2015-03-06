@@ -54,13 +54,13 @@ class Window(QtGui.QDialog):
     def closeEvent(self, event):
         if self.trayIcon.isVisible():
             QtGui.QMessageBox.information(self, "Systray",
-                    "The program will keep running in the system tray. To "
-                    "terminate the program, choose <b>Quit</b> in the "
-                    "context menu of the system tray entry.")
+                    "The program will keep running in the system tray. "
+                    "To terminate the program, choose <b>Quit</b> in "
+                    "the menu of the system tray airplay icon.")
             self.hide()
             event.ignore()
         else:
-            self.Quit()
+            sys.exit()
 
     def setIcon(self, index):
         icon = self.iconComboBox.itemIcon(index)

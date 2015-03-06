@@ -8,7 +8,7 @@ import socket
 import signal
 import random
 import tempfile
-import xmlrpc.client
+import xmlrpclib
 import threading
 import subprocess
 
@@ -158,7 +158,7 @@ class RubyContext(object):
             args = ["ruby", "-W0", filename]
             if self.__debug:
                 # debug mode, allow all server output to be displayed
-                print("starting Ruby context on http://%s:%s/" % (self.__ruby_host, self.__ruby_port), file=sys.stderr)
+                print >> sys.stderr, "starting Ruby context on http://%s:%s/" % (self.__ruby_host, self.__ruby_port)
                 self.__xmlrpc_server_proc = subprocess.Popen(args=args)
             else:
                 # not debug mode, hide all server output
@@ -188,14 +188,14 @@ class RubyContext(object):
                     s.connect((self.__ruby_host, self.__ruby_port))
                     s.close()
                     socket_available = True
-                except socket.error as e:
+                except socket.error, e:
                     socket_available = False
                 time.sleep(0.1)
                 tries_remaining -= 1
             
             # ruby server started, connect to it
             # TODO: basic HTTP AUTH?
-            self.__xmlrpc_client = xmlrpc.client.Server(
+            self.__xmlrpc_client = xmlrpclib.Server(
                 uri="http://%s:%s/" % (self.__ruby_host, self.__ruby_port),
                 verbose=self.__python_verbose,
                 allow_none=self.__allow_none,
@@ -355,7 +355,7 @@ class RubyProxy(object):
             raise ValueError("cannot mix sequenced arguments with keyword arguments when calling to the Ruby context")
         if kwargs:
             transformed_kwargs = {}
-            for k,v in kwargs.items():
+            for k,v in kwargs.iteritems():
                 transformed_kwargs[k] = self.__transform_argument(v)
             substituted_code = code % transformed_kwargs
         else:
