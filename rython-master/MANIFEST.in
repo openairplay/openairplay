@@ -1,5 +1,0 @@
-include LICENSE.txt
-include README.txt
-include MANIFEST.in
-include setup.py
-recursive-include tests *
