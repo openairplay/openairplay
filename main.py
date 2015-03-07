@@ -25,13 +25,14 @@ else: sys.exit("This program requires Python 2.7+ or 3.3+, please install either
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import QSettings
 
-settings = QSettings('ubuntu-airplay') #TODO Settings support http://pyqt.sourceforge.net/Docs/PyQt4/pyqt_qsettings.html
 
 class Window(QtGui.QDialog):
     def __init__(self):
         super(Window, self).__init__()
 
-        # Place items in our settings window.
+        self.settings = QSettings('ubuntu-airplay') #TODO Settings support http://pyqt.sourceforge.net/Docs/PyQt4/pyqt_qsettings.html
+
+        # Place items in our window.
         self.createIconGroupBox()
         self.createMessageGroupBox()
 
@@ -72,7 +73,7 @@ class Window(QtGui.QDialog):
 
     def closeEvent(self, event): # When someone clicks to close the window, not the tray icon.
         if self.trayIcon.isVisible():
-            if not settings.value('promptOnClose_systray'):
+            if not self.settings.value('promptOnClose_systray'):
                 QtGui.QMessageBox.information(self, "Systray",
                     "The program will keep running in the system tray. "
                     "To terminate the program, choose <b>Quit</b> in "
@@ -213,5 +214,4 @@ if __name__ == '__main__':
     window.show()
 
     # After teh progreem endz:
-    del settings # Store user settings
     sys.exit(app.exec_()) # Goodbye World
