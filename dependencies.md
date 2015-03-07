@@ -1,9 +1,9 @@
 Python 2/3: `PyQt4`[supplies the Qt framework for the GUI]
----
+
 Ubuntu Packages: `libavahi-compat-libdnssd-dev`[supplies dns_sd headers for Ruby Gem `dnssd`]
----
+
 Ruby:  `airplay`[this requires multiple other Ruby Gems, installed automatically]
----
+
 Install Instructions:
 ===
 Ubuntu:
