@@ -139,9 +139,9 @@ class Window(QtGui.QDialog):
         self.durationLabel = QtGui.QLabel("Duration:")
 
         self.durationSpinBox = QtGui.QSpinBox()
-        self.durationSpinBox.setRange(5, 60)
-        self.durationSpinBox.setSuffix(" s")
-        self.durationSpinBox.setValue(15)
+        self.durationSpinBox.setRange(2, 15)
+        self.durationSpinBox.setSuffix("s")
+        self.durationSpinBox.setValue(5)
 
         durationWarningLabel = QtGui.QLabel("(some systems might ignore this hint)")
         durationWarningLabel.setIndent(10)
