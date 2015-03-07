@@ -11,7 +11,7 @@ Ubuntu:
 Install packages needed:  
 `sudo apt-get install libavahi-compat-libdnssd-dev ruby rubygems-integration`  
 Python 2:  
-`sudo apt-get install libavahi-compat-libdnssd-dev ruby python python-qt4`  
+`sudo apt-get install python python-qt4`  
 Python 3:  
 `sudo apt-get install python3 python3-pyqt4 python3-qt4`  
 
