@@ -18,12 +18,7 @@ It is made to support Ubuntu only, but I'm trying to make this thing OS-independ
 
 Requirements:
 ---
-- PyQt4
-- Rython
-  - Rython for Python 2 is `pip install rython`
-  - Rython for Python 3 is included with this project from https://github.com/fbauer/rython
-    - Use `python3 setup.py install` from the rython-master directory to install it, `pip3 install rython` does not work properly.
-
+See the `dependencies.md` file for installing the needed software.
 
 Why I'm doing this:
 ---
