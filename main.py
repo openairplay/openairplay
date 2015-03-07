@@ -25,7 +25,7 @@ else: sys.exit("This program requires Python 2.7+ or 3.3+, please install either
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import QSettings
 
-settings = QSettings('ubuntu-airplay')
+settings = QSettings('ubuntu-airplay') #TODO Settings support http://pyqt.sourceforge.net/Docs/PyQt4/pyqt_qsettings.html
 
 class Window(QtGui.QDialog):
     def __init__(self):

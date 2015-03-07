@@ -1,4 +1,4 @@
-ubuntu-airplay 0.0.19
+ubuntu-airplay 0.0.21
 ===
 
 I have always been annoyed about how iOS, Mac OSX, and all of Apples proprietary hardware/software has inhibited so many of
