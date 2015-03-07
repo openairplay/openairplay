@@ -31,20 +31,25 @@ class Window(QtGui.QDialog):
     def __init__(self):
         super(Window, self).__init__()
 
+        # Place items in our settings window.
         self.createIconGroupBox()
         self.createMessageGroupBox()
 
+        #TODO Don't understand why we do this yet.
         self.iconLabel.setMinimumWidth(self.durationLabel.sizeHint().width())
 
+        #TODO Don't know what this does yet.
         self.createActions()
         self.createTrayIcon()
 
+        #TODO Still IDK why we need this, but we do.
         self.showMessageButton.clicked.connect(self.showMessage)
         self.showIconCheckBox.toggled.connect(self.trayIcon.setVisible)
         self.iconComboBox.currentIndexChanged.connect(self.setIcon)
         self.trayIcon.messageClicked.connect(self.messageClicked)
         self.trayIcon.activated.connect(self.iconActivated)
 
+        # Finally add the GUI item groupings we made to the layout and init it.
         mainLayout = QtGui.QVBoxLayout()
         mainLayout.addWidget(self.iconGroupBox)
         mainLayout.addWidget(self.messageGroupBox)
@@ -55,16 +60,17 @@ class Window(QtGui.QDialog):
         self.trayIcon.show()
         self.trayIcon.setToolTip("Ubuntu Airplay")
 
+        # Set our basic window things.
         self.setWindowTitle("Ubuntu Airplay Settings")
         self.resize(400, 300)
 
-    def setVisible(self, visible):
+    def setVisible(self, visible): # When we want to 'disappear' into the system tray.
         self.minimizeAction.setEnabled(visible)
         self.maximizeAction.setEnabled(not self.isMaximized())
         self.restoreAction.setEnabled(self.isMaximized() or not visible)
         super(Window, self).setVisible(visible)
 
-    def closeEvent(self, event):
+    def closeEvent(self, event): # When someone clicks to close the window, not the tray icon.
         if self.trayIcon.isVisible():
             if not settings.value('promptOnClose_systray'):
                 QtGui.QMessageBox.information(self, "Systray",
@@ -78,7 +84,7 @@ class Window(QtGui.QDialog):
             print("Tray Icon not visible, quitting.")
             sys.exit("Exit: No system tray instance to close to.")
 
-    def setIcon(self, index):
+    def setIcon(self, index): # Sets the selected icon in the tray and taskbar.
         icon = self.iconComboBox.itemIcon(index)
         self.trayIcon.setIcon(icon)
         self.setWindowIcon(icon)
@@ -91,18 +97,18 @@ class Window(QtGui.QDialog):
         elif reason == QtGui.QSystemTrayIcon.MiddleClick:
             self.showMessage()
 
-    def showMessage(self):
+    def showMessage(self): # Show the message that was typed in the boxes
         icon = QtGui.QSystemTrayIcon.MessageIcon(
                 self.typeComboBox.itemData(self.typeComboBox.currentIndex()))
         self.trayIcon.showMessage(self.titleEdit.text(),
                 self.bodyEdit.toPlainText(), icon,
                 self.durationSpinBox.value() * 1000)
 
-    def messageClicked(self):
+    def messageClicked(self): # In the case that someone clicks on the notification popup (impossible on Ubuntu Unity)
         QtGui.QMessageBox.information(None, "Ubuntu Airplay Help", "If you need help with Ubuntu Airplay, "
         "see the Github page to file bug reports or see further documentation and help.")
 
-    def createIconGroupBox(self):
+    def createIconGroupBox(self): # Add the SysTray preferences window grouping
         self.iconGroupBox = QtGui.QGroupBox("Tray Icon")
 
         self.iconLabel = QtGui.QLabel("Icon:")
@@ -121,7 +127,7 @@ class Window(QtGui.QDialog):
         iconLayout.addWidget(self.showIconCheckBox)
         self.iconGroupBox.setLayout(iconLayout)
 
-    def createMessageGroupBox(self):
+    def createMessageGroupBox(self): # Add the message test GUI window grouping.
         self.messageGroupBox = QtGui.QGroupBox("Balloon Message")
 
         typeLabel = QtGui.QLabel("Type:")
@@ -173,7 +179,7 @@ class Window(QtGui.QDialog):
         messageLayout.setRowStretch(4, 1)
         self.messageGroupBox.setLayout(messageLayout)
 
-    def createActions(self):
+    def createActions(self): # Create Actions that can be taken from the System Tray Icon
         self.minimizeAction = QtGui.QAction("Mi&nimize", self, triggered=self.hide)
 
         self.maximizeAction = QtGui.QAction("Ma&ximize", self, triggered=self.showMaximized)
@@ -205,4 +211,7 @@ if __name__ == '__main__':
 
     window = Window()
     window.show()
-    sys.exit(app.exec_())
+
+    # After teh progreem endz:
+    del settings # Store user settings
+    sys.exit(app.exec_()) # Goodbye World

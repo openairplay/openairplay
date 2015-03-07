@@ -17,3 +17,5 @@ Python 3:
 
 Now for the Ruby dependencies:  
 `sudo gem install airplay dnssd`
+
+Now you should be able to run `python main.py` or `python3 main.py` to start the program.
