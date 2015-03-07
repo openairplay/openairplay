@@ -50,8 +50,10 @@ class Window(QtGui.QDialog):
         mainLayout.addWidget(self.messageGroupBox)
         self.setLayout(mainLayout)
 
+        # Set our System Tray Presence
         self.iconComboBox.setCurrentIndex(1)
         self.trayIcon.show()
+        self.trayIcon.setToolTip("Ubuntu Airplay")
 
         self.setWindowTitle("Ubuntu Airplay Settings")
         self.resize(400, 300)
@@ -80,8 +82,6 @@ class Window(QtGui.QDialog):
         icon = self.iconComboBox.itemIcon(index)
         self.trayIcon.setIcon(icon)
         self.setWindowIcon(icon)
-
-        self.trayIcon.setToolTip("Ubuntu Airplay")
 
     def iconActivated(self, reason):
         if reason in (QtGui.QSystemTrayIcon.Trigger, QtGui.QSystemTrayIcon.DoubleClick):
@@ -195,8 +195,6 @@ class Window(QtGui.QDialog):
 
 if __name__ == '__main__':
 
-    import sys
-
     app = QtGui.QApplication(sys.argv)
 
     if not QtGui.QSystemTrayIcon.isSystemTrayAvailable():
@@ -207,5 +205,4 @@ if __name__ == '__main__':
 
     window = Window()
     window.show()
-    print("Goodbye")
     sys.exit(app.exec_())
