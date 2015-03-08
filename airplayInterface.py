@@ -1,19 +1,35 @@
 #!/usr/bin/env python3
 
-import subprocess
+import sys
+from subprocess import Popen, PIPE, STDOUT # Using pipes to pass commands to the Ruby Script
 
-def getAirDevices():
-    try:
-        rawStringOutput = subprocess.check_output("ruby airplay/air list", shell=True)
-    except Exception as ErrorDetail:
-        rawStringOutput = ErrorDetail.output
-    #TODO Get sample output from the call and format it into a python list of devices
-    devicelist = rawStringOutput.decode(encoding='UTF-8').split('\n')
-    print(devicelist)
+# Import the right version of rython, 2 or 3
+if sys.version_info >= (3, 3):
+    import rython3 as rython
+    print("Using Rython3: " + str(sys.version_info))
+elif sys.version_info >= (2, 7):
+    import rython2 as rython
+    print("Using Rython2: " + str(sys.version_info))
+else: sys.exit("This program requires Python 2.7+ or 3.3+, please install either of those versions.")
 
-def sendAirImage(imageFile, device = None):
-    if imageFile is None: raise ValueError # If the imageFile is none, it's not a valid Value.
-    if device is None: raise ValueError # We need to know where to send the image.
-    #TODO Set up image sending
-    # use: 'ruby airplay/air view test.jpg [--device <deviceName>]'
-    raise NotImplementedError
+# Set up our Ruby process to send commands to
+slave = Popen(['ruby', 'airplayInterface.rb'], stdin=PIPE, stdout=PIPE, stderr=STDOUT)
+
+def rubyParse(command):
+    inputCommand = command + "\n"
+    slave.stdin.write(inputCommand.encode('utf-8'))
+    result = []
+    while True:
+        # read one line, remove newline chars and trailing spaces:
+        line = slave.stdout.readline().rstrip()
+        #print 'line:', line
+        if line == '[end]':
+            break
+        result.append(line)
+    return(result)
+
+if __name__ == '__main__':
+    print("Performing Tests...")
+    print("List devices: Airplay::CLI.method(:list)")
+    print(rubyParse("Airplay::CLI.method(:list)"))
+    print("Test complete.")

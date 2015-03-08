@@ -11,20 +11,10 @@
 import sip
 sip.setapi('QVariant', 2)
 
-
 import sys
-
-if sys.version_info >= (3, 3):
-    import rython3
-    print("Using Rython3: " + str(sys.version_info))
-elif sys.version_info >= (2, 7):
-    import rython2
-    print("Using Rython2: " + str(sys.version_info))
-else: sys.exit("This program requires Python 2.7+ or 3.3+, please install either of those versions.")
 
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import QSettings
-
 
 class Window(QtGui.QDialog):
     def __init__(self):
