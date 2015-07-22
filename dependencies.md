@@ -1,5 +1,5 @@
 
-# These are the packages which you may need installed to use this program.
+## These are the packages which you may need installed to use this program.
 
 Python 3: `PyQt4`[supplies the Qt framework for the GUI]
 
