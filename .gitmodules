@@ -1,0 +1,3 @@
+[submodule "airplay"]
+	path = airplay
+	url = git@github.com:elcuervo/airplay.git
