@@ -1,7 +1,7 @@
 { # your 'try' block
     python3 main.py
 } || { # your 'catch' block
-    python main.py
+    echo "The program has crashed, please report the error."
 }
 
-rm tmp # finally: this will always happen
+echo "Program quit." # finally: this will always happen
