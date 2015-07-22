@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
 
 require "clap"
-require "airplay/cli"
-require "airplay/cli/version"
+require_relative "airplay/lib/airplay/cli"
+require_relative "airplay/lib/airplay/cli/version"
 
 def listAirDevices
   Airplay::CLI.method(:list)

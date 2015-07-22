@@ -4,13 +4,13 @@ import sys
 from subprocess import Popen, PIPE, STDOUT # Using pipes to pass commands to the Ruby Script
 
 # Import the right version of rython, 2 or 3
-if sys.version_info >= (3, 3):
-    import rython3 as rython
-    print("Using Rython3: " + str(sys.version_info))
-elif sys.version_info >= (2, 7):
-    import rython2 as rython
-    print("Using Rython2: " + str(sys.version_info))
-else: sys.exit("This program requires Python 2.7+ or 3.3+, please install either of those versions.")
+#if sys.version_info >= (3, 3):
+#    import rython3 as rython
+#    print("Using Rython3: " + str(sys.version_info))
+#elif sys.version_info >= (2, 7):
+#    import rython2 as rython
+#    print("Using Rython2: " + str(sys.version_info))
+#else: sys.exit("This program requires Python 2.7+ or 3.3+, please install either of those versions.")
 
 # Set up our Ruby process to send commands to
 slave = Popen(['ruby', 'airplayInterface.rb'], stdin=PIPE, stdout=PIPE, stderr=STDOUT)
@@ -32,4 +32,5 @@ if __name__ == '__main__':
     print("Performing Tests...")
     print("List devices: Airplay::CLI.method(:list)")
     print(rubyParse("Airplay::CLI.method(:list)"))
+    print(rubyParse("exit"))
     print("Test complete.")
