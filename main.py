@@ -39,7 +39,8 @@ class Window(QtGui.QDialog):
 
         # TODO Still IDK why we need this, but we do.
         self.showMessageButton.clicked.connect(self.showMessage)
-        self.showIconCheckBox.toggled.connect(self.trayIcon.setVisible)
+        self.showIconCheckBox.toggled.connect(self.trayIconVisible)
+        self.systrayClosePromptCheckBox.toggled.connect(self.setSystrayClosePrompt)
         self.iconComboBox.currentIndexChanged.connect(self.setIcon)
         self.trayIcon.messageClicked.connect(self.messageClicked)
         self.trayIcon.activated.connect(self.iconActivated)
@@ -60,6 +61,11 @@ class Window(QtGui.QDialog):
         self.setWindowTitle("Ubuntu Airplay Settings")
         self.resize(400, 300)
 
+        # If the user chose not to show the system tray icon:
+        if self.settings.value('systrayicon', type=bool) is False:
+            print("The user chose not to show the system tray icon.")
+            self.trayIconVisible(False)
+
     def setVisible(self, visible):
         # When we want to 'disappear' into the system tray.
         self.minimizeAction.setEnabled(visible)
@@ -70,23 +76,34 @@ class Window(QtGui.QDialog):
     def closeEvent(self, event):
         # When someone clicks to close the window, not the tray icon.
         if self.trayIcon.isVisible():
-            if not self.settings.value('promptOnClose_systray'): #TODO option to disable
+            if self.settings.value('promptOnClose_systray', type=bool): #TODO option to disable
+                print("The program is returning to the system tray, user notified.")
                 QtGui.QMessageBox.information(self, "Systray",
                     "The program will keep running in the system tray. \
                     To terminate the program, choose <b>Quit</b> in \
                     the menu of the system tray airplay icon.")
+            else:
+                print("Program returned to system tray, user chose not to be notified.")
             self.hide()
             event.ignore()
             print("Closing to System Tray")
         else:
             print("Tray Icon not visible, quitting.")
-            sys.exit("Exit: No system tray instance to close to.")
+            self.quit("Exit: No system tray instance to close to.")
 
     def setIcon(self, index):
         # Sets the selected icon in the tray and taskbar.
         icon = self.iconComboBox.itemIcon(index)
         self.trayIcon.setIcon(icon)
         self.setWindowIcon(icon)
+
+    def setSystrayClosePrompt(self, preference):
+        print("Prompt on close is now " + str(preference))
+        self.settings.setValue('promptOnClose_systray', preference)
+
+    def trayIconVisible(self, preference):
+        self.trayIcon.setVisible(preference)
+        self.settings.setValue('systrayicon', preference)
 
     def iconActivated(self, reason):
         if reason in (QtGui.QSystemTrayIcon.Trigger, QtGui.QSystemTrayIcon.DoubleClick):
@@ -119,13 +136,19 @@ class Window(QtGui.QDialog):
         self.iconComboBox.addItem(QtGui.QIcon('images/Airplay-Dark'), "White Icon")
 
         self.showIconCheckBox = QtGui.QCheckBox("Show tray icon")
-        self.showIconCheckBox.setChecked(True)
+        self.showIconCheckBox.setChecked(self.settings.value('systrayicon', type=bool))
+        print("Got systrayicon from settings:" + str(self.settings.value('systrayicon', type=bool)))
+
+        self.systrayClosePromptCheckBox = QtGui.QCheckBox("Systray Close warning")
+        self.systrayClosePromptCheckBox.setChecked(self.settings.value('promptOnClose_systray', type=bool))
+        print("Got promptOnClose_systray from settings:" + str(self.settings.value('promptOnClose_systray', type=bool)))
 
         iconLayout = QtGui.QHBoxLayout()
         iconLayout.addWidget(self.iconLabel)
         iconLayout.addWidget(self.iconComboBox)
         iconLayout.addStretch()
         iconLayout.addWidget(self.showIconCheckBox)
+        iconLayout.addWidget(self.systrayClosePromptCheckBox)
         self.iconGroupBox.setLayout(iconLayout)
 
     # Creates the device selection list.
@@ -212,6 +235,10 @@ class Window(QtGui.QDialog):
 
         self.trayIcon = QtGui.QSystemTrayIcon(self)
         self.trayIcon.setContextMenu(self.trayIconMenu)
+
+    def quit(self, reason):
+        del self.settings
+        sys.exit(reason)
 
 if __name__ == '__main__':
 

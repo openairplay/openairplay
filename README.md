@@ -1,19 +1,18 @@
-ubuntu-airplay 0.0.23
+ubuntu-airplay 0.0.26
 ===
 
 I have always been annoyed about how iOS, Mac OSX, and all of Apples proprietary hardware/software has inhibited so many of us technology savvy people.  
 
 Project Status:
 ---
-I've found multiple other open source projects which can interface with airplay servers, now I need to implement some.  
-I know that it's possible to stream video, pictures, and sound is supported from Pulseaudio, but this project won't be complete without screensharing.  
+Currently working on discovering Airplay Receivers to parse as list options.
 
-I am currently learning and planning how to move forward.
+Next step: figure out desktop encoding to send to receiver.
 
 Project Details:
 ---
 Right now it's Python 3 using the QT system from PyQt4.  
-It is designed for Ubuntu/Linux only, but I'm trying to make this thing OS-independent.  
+It is designed primarily for Ubuntu hence the name, but I'm trying to make this thing OS-independent.  
 From my last testing, this ran fine on my Dad's Windows 8 laptop, and I've tested 14.04-15.04.
 
 Requirements:
@@ -29,9 +28,9 @@ I am one of two people at this school who use Linux (Ubuntu) and who bring their
 What this aims to be:
 ---
 This application is designed to sit in your System Tray just like in OSX, with a drop down list of available Airplay Recievers, and allow you to:
-- Stream your desktop
-- Send a photo/picture
-- Play a video
+- Stream your desktop  
+- Send a photo/picture  
+- Play a video  
 - Stream Music  
 And whatever else the users and developers of this project wish it to be.
 
