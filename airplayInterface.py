@@ -22,8 +22,9 @@ def rubyParse(command):
     while True:
         # read one line, remove newline chars and trailing spaces:
         line = slave.stdout.readline().rstrip()
-        #print 'line:', line
-        if line == '[end]':
+        #if len(line) > 0:
+        #    print 'line:', line
+        if "[end]" in line:
             break
         result.append(line)
     return(result)
@@ -32,5 +33,4 @@ if __name__ == '__main__':
     print("Performing Tests...")
     print("List devices: Airplay::CLI.method(:list)")
     print(rubyParse("Airplay::CLI.method(:list)"))
-    print(rubyParse("exit"))
     print("Test complete.")

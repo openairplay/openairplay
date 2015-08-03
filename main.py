@@ -26,8 +26,9 @@ class Window(QtGui.QDialog):
         # http://pyqt.sourceforge.net/Docs/PyQt4/pyqt_qsettings.html
 
         # Place items in our window.
-        self.createIconGroupBox()
-        self.createMessageGroupBox()
+        self.createIconGroupBox() # Tray Icon Settings
+        self.createMessageGroupBox() # Test notification group
+        self.createDeviceListGroupBox() # Airplay server selection
 
         # TODO Don't understand why we do this yet.
         self.iconLabel.setMinimumWidth(self.durationLabel.sizeHint().width())
@@ -46,6 +47,7 @@ class Window(QtGui.QDialog):
         # Finally add the GUI item groupings we made to the layout and init it.
         mainLayout = QtGui.QVBoxLayout()
         mainLayout.addWidget(self.iconGroupBox)
+        mainLayout.addWidget(self.deviceListGroupBox)
         mainLayout.addWidget(self.messageGroupBox)
         self.setLayout(mainLayout)
 
@@ -68,7 +70,7 @@ class Window(QtGui.QDialog):
     def closeEvent(self, event):
         # When someone clicks to close the window, not the tray icon.
         if self.trayIcon.isVisible():
-            if not self.settings.value('promptOnClose_systray'):
+            if not self.settings.value('promptOnClose_systray'): #TODO option to disable
                 QtGui.QMessageBox.information(self, "Systray",
                     "The program will keep running in the system tray. \
                     To terminate the program, choose <b>Quit</b> in \
@@ -126,6 +128,19 @@ class Window(QtGui.QDialog):
         iconLayout.addWidget(self.showIconCheckBox)
         self.iconGroupBox.setLayout(iconLayout)
 
+    # Creates the device selection list.
+    def createDeviceListGroupBox(self):
+        self.deviceListGroupBox = QtGui.QGroupBox("Airplay to")
+
+        self.deviceSelectList = QtGui.QListWidget()
+        deviceSelectListNoDisplayItem = QtGui.QListWidgetItem("No display.")
+        self.deviceSelectList.addItem(deviceSelectListNoDisplayItem)
+
+        # layout
+        deviceListLayout = QtGui.QHBoxLayout()
+        deviceListLayout.addWidget(self.deviceSelectList)
+        self.deviceListGroupBox.setLayout(deviceListLayout)
+
     def createMessageGroupBox(self): # Add the message test GUI window grouping.
         self.messageGroupBox = QtGui.QGroupBox("Balloon Message")
 
@@ -158,7 +173,7 @@ class Window(QtGui.QDialog):
         bodyLabel = QtGui.QLabel("Body:")
 
         self.bodyEdit = QtGui.QTextEdit()
-        self.bodyEdit.setPlainText("Don't believe me. Honestly, I don't have a clue.\nClick this balloon for details.")
+        self.bodyEdit.setPlainText("Don't believe me. Honestly, I don't have a clue.")
 
         self.showMessageButton = QtGui.QPushButton("Show Message")
         self.showMessageButton.setDefault(True)
