@@ -13,9 +13,12 @@ sip.setapi('QVariant', 2)
 
 import sys
 
+# Qt GUI stuff
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import QSettings
 
+# Airplay Things:
+import discovery
 
 class Window(QtGui.QDialog):
     def __init__(self):
@@ -65,6 +68,9 @@ class Window(QtGui.QDialog):
         if self.settings.value('systrayicon', type=bool) is False:
             print("The user chose not to show the system tray icon.")
             self.trayIconVisible(False)
+
+        # Start discovery of airplay receivers:
+        discovery.start()
 
     def setVisible(self, visible):
         # When we want to 'disappear' into the system tray.
@@ -165,7 +171,7 @@ class Window(QtGui.QDialog):
         self.deviceListGroupBox.setLayout(deviceListLayout)
 
     def createMessageGroupBox(self): # Add the message test GUI window grouping.
-        self.messageGroupBox = QtGui.QGroupBox("Balloon Message")
+        self.messageGroupBox = QtGui.QGroupBox("Balloon Message Test:")
 
         typeLabel = QtGui.QLabel("Type:")
 
@@ -238,6 +244,7 @@ class Window(QtGui.QDialog):
 
     def quit(self, reason):
         del self.settings
+        discovery.stop()
         sys.exit(reason)
 
 if __name__ == '__main__':

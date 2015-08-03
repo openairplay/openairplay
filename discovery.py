@@ -6,33 +6,34 @@ import zeroconf
 global airplayReceivers
 airplayReceivers = []
 
-global started = False
+global discoveryStarted
+discoveryStarted = False
 
-class MyListener(object):
+class AirplayListener(object):
 
     def remove_service(self, zeroconf, type, name):
         airplayReceivers.remove(name)
-        print("Service %s removed" % (name,))
+        print("Airplay receiver %s removed" % (name,))
 
     def add_service(self, zeroconf, type, name):
         info = zeroconf.get_service_info(type, name)
         airplayReceivers.append(name)
-        print("Service %s added, service info: %s" % (name, info))
+        print("Airplay receiver %s added, service info: %s" % (name, info))
 
 # Start the listener
-def start(self):
+def start():
     ZC = zeroconf.Zeroconf()
     listener = AirplayListener()
     browser = zeroconf.ServiceBrowser(ZC, "_airplay._tcp.local.", listener)
     started = True
 
 # To stop it:
-def stop(self):
-    if (browser is not None) or (started = True):
+def stop():
+    if (browser is not None) or (discoveryStarted is True):
         ZC.close()
         del listener
         del browser
         del ZC
-        started = False
+        discoveryStarted = False
     else:
         print("WARN: discovery.stop() called but not running")
