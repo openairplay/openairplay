@@ -1,19 +1,19 @@
-ubuntu-airplay 0.0.26
+open-airplay 0.0.32
 ===
 
 I have always been annoyed about how iOS, Mac OSX, and all of Apples proprietary hardware/software has inhibited so many of us technology savvy people.  
 
 Project Status:
 ---
-Currently working on discovering Airplay Receivers to parse as list options.
+Currently working on parsing Airplay receiver list into menu options.
 
-Next step: figure out desktop encoding to send to receiver.
+Next step: design desktop streaming system, figure out how to work in video, audio, and image streaming to integrate into the desktop.
 
 Project Details:
 ---
 Right now it's Python 3 using the QT system from PyQt4.  
-It is designed primarily for Ubuntu hence the name, but I'm trying to make this thing OS-independent.  
-From my last testing, this ran fine on my Dad's Windows 8 laptop, and I've tested 14.04-15.04.
+It is designed in an Ubuntu Unity environment, but the final product should work on any platform with Python and a system tray.  
+From my last testing, this ran fine on my Dad's Windows 8 laptop, and I've tested Ubuntu 14.04-15.04.
 
 Requirements:
 ---

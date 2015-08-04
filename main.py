@@ -24,7 +24,7 @@ class Window(QtGui.QDialog):
     def __init__(self):
         super(Window, self).__init__()
 
-        self.settings = QSettings('ubuntu-airplay')
+        self.settings = QSettings('open-airplay')
         # TODO Settings support
         # http://pyqt.sourceforge.net/Docs/PyQt4/pyqt_qsettings.html
 
@@ -58,10 +58,10 @@ class Window(QtGui.QDialog):
         # Set our System Tray Presence
         self.iconComboBox.setCurrentIndex(1)
         self.trayIcon.show()
-        self.trayIcon.setToolTip("Ubuntu Airplay")
+        self.trayIcon.setToolTip("OpenAirplay")
 
         # Set our basic window things.
-        self.setWindowTitle("Ubuntu Airplay Settings")
+        self.setWindowTitle("OpenAirplay Settings")
         self.resize(400, 300)
 
         # If the user chose not to show the system tray icon:
@@ -129,7 +129,7 @@ class Window(QtGui.QDialog):
 
     def messageClicked(self):
         # In the case that someone clicks on the notification popup (impossible on Ubuntu Unity)
-        QtGui.QMessageBox.information(None, "Ubuntu Airplay Help", "If you need help with Ubuntu Airplay, "
+        QtGui.QMessageBox.information(None, "OpenAirplay Help", "If you need help with OpenAirplay, "
         "see the Github page to file bug reports or see further documentation and help.")
 
     def createIconGroupBox(self): # Add the SysTray preferences window grouping
