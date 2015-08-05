@@ -7,10 +7,6 @@
 #  This application is licensed under the GNU GPLv3 License, included with
 #  this application source.
 
-# This is only needed for Python v2 but is harmless for Python v3.
-import sip
-sip.setapi('QVariant', 2)
-
 import sys
 
 # Qt GUI stuff
@@ -25,7 +21,7 @@ class Window(QtGui.QDialog):
         super(Window, self).__init__()
 
         self.settings = QSettings('open-airplay')
-        # TODO Settings support
+        # Establishes a hook on our system settings.
         # http://pyqt.sourceforge.net/Docs/PyQt4/pyqt_qsettings.html
 
         # Place items in our window.
@@ -33,14 +29,14 @@ class Window(QtGui.QDialog):
         self.createMessageGroupBox() # Test notification group
         self.createDeviceListGroupBox() # Airplay server selection
 
-        # TODO Don't understand why we do this yet.
+        # Set the iconlabel to it's minimum width without scollbaring.
         self.iconLabel.setMinimumWidth(self.durationLabel.sizeHint().width())
 
-        # TODO Don't know what this does yet.
+        # Create action groups to put actionable items into.
         self.createActions()
         self.createTrayIcon()
 
-        # TODO Still IDK why we need this, but we do.
+        # Attach clicks on things to actual functions
         self.showMessageButton.clicked.connect(self.showMessage)
         self.showIconCheckBox.toggled.connect(self.trayIconVisible)
         self.systrayClosePromptCheckBox.toggled.connect(self.setSystrayClosePrompt)
@@ -68,6 +64,12 @@ class Window(QtGui.QDialog):
         if self.settings.value('systrayicon', type=bool) is False:
             print("The user chose not to show the system tray icon.")
             self.trayIconVisible(False)
+
+        # Setup stuff to poll available receivers every 3 seconds.
+        self.oldReceiverList = []
+        self.timer=QtCore.QTimer()
+        self.timer.start(3000)
+        self.timer.timeout.connect(self.updateReceivers)
 
         # Start discovery of airplay receivers:
         discovery.start()
@@ -131,6 +133,25 @@ class Window(QtGui.QDialog):
         # In the case that someone clicks on the notification popup (impossible on Ubuntu Unity)
         QtGui.QMessageBox.information(None, "OpenAirplay Help", "If you need help with OpenAirplay, "
         "see the Github page to file bug reports or see further documentation and help.")
+
+    def updateReceivers(self):
+        if self.oldReceiverList == discovery.airplayReceivers:
+            print("No change to receiver list.")
+        if list(set(discovery.airplayReceivers) - set(self.oldReceiverList)) != []:
+            # The new list has items oldReceiverList doesn't!
+            for item in list(set(discovery.airplayReceivers) - set(self.oldReceiverList)):
+                self.oldReceiverList.append(item)
+                print("Adding device: " + item)
+                item = QtGui.QListWidgetItem(item)
+                self.deviceSelectList.addItem(item)
+        if list(set(self.oldReceiverList) - set(discovery.airplayReceivers)) != []:
+            # Items have been removed from the list!
+            for item in list(set(self.oldReceiverList) - set(discovery.airplayReceivers)):
+                self.oldReceiverList.remove(item)
+                print("Removed device: " + item)
+                items = self.deviceSelectList.findItems(item, QtCore.Qt.MatchExactly)
+                for x in items:
+                    self.deviceSelectList.takeItem(self.deviceSelectList.row(x))
 
     def createIconGroupBox(self): # Add the SysTray preferences window grouping
         self.iconGroupBox = QtGui.QGroupBox("Tray Icon")
