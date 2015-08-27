@@ -5,9 +5,9 @@ I have always been annoyed about how iOS, Mac OSX, and all of Apples proprietary
 
 Project Status:
 ---
-Currently working on parsing Airplay receiver list into menu options.
+Airplay discovery is working, and list is parsable with selection and items.
 
-Next step: design desktop streaming system, figure out how to work in video, audio, and image streaming to integrate into the desktop.
+Next step: convert selection to actual output of desktop images to Airplay device.
 
 Project Details:
 ---
