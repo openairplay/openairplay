@@ -84,7 +84,7 @@ class Window(QtGui.QDialog):
     def closeEvent(self, event):
         # When someone clicks to close the window, not the tray icon.
         if self.trayIcon.isVisible():
-            if self.settings.value('promptOnClose_systray', type=bool): #TODO option to disable
+            if self.settings.value('promptOnClose_systray', type=bool):
                 print("The program is returning to the system tray, user notified.")
                 QtGui.QMessageBox.information(self, "Systray",
                     "The program will keep running in the system tray. \
@@ -263,7 +263,7 @@ class Window(QtGui.QDialog):
 
     def quit(self, reason):
         del self.settings
-        discovery.stop()
+        #discovery.stop()
         sys.exit(reason)
 
 if __name__ == '__main__':

@@ -9,6 +9,8 @@ airplayReceivers = []
 global discoveryStarted
 discoveryStarted = False
 
+browser = None
+
 class AirplayListener(object):
 
     def remove_service(self, zeroconf, type, name):
