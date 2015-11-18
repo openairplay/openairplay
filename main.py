@@ -140,7 +140,8 @@ class Window(QtGui.QDialog):
             for item in list(set(discovery.airplayReceivers) - set(self.oldReceiverList)):
                 self.oldReceiverList.append(item)
                 print("Adding device: " + item)
-                item = QtGui.QListWidgetItem(item)
+                # Convert item to string to remove the excess info
+                item = QtGui.QListWidgetItem(str(item).replace("._airplay._tcp.local.", ""))
                 self.deviceSelectList.addItem(item)
         if list(set(self.oldReceiverList) - set(discovery.airplayReceivers)) != []:
             # Items have been removed from the list!
