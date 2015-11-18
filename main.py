@@ -5,7 +5,14 @@
 #  This application is licensed under the GNU GPLv3 License, included with
 #  this application source.
 
+global DEBUG = True
+
 import sys
+
+if DEBUG:
+    print("Debugging enabled.")
+    print("Called with system args: " + str(sys.argv))
+    print("Python version: " ) #TODO
 
 # Qt GUI stuff
 try:
@@ -22,6 +29,7 @@ try:
     import discovery
 except:
     sys.exit("Discovery module could not be loaded.")
+
 class Window(QtGui.QDialog):
     def __init__(self):
         super(Window, self).__init__()
