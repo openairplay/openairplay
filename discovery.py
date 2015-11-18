@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 
 import sys
-import zeroconf
+try:
+    import zeroconf
+except ImportError:
+    print("Python3 Zeroconf module could not be loaded.")
+    print("Please ensure you have it installed.")
+    sys.exit("Could not find zeroconf.")
 
 global airplayReceivers
 airplayReceivers = []

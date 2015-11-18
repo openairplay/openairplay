@@ -2,20 +2,26 @@
 
 #  Copyright (C) 2015-2016 Ben Klein. All rights reserved.
 #
-#  This file was based upon an example class of the Qt Toolkit.
-#
 #  This application is licensed under the GNU GPLv3 License, included with
 #  this application source.
 
 import sys
 
 # Qt GUI stuff
-from PyQt4 import QtCore, QtGui
-from PyQt4.QtCore import QSettings
+try:
+    from PyQt4 import QtCore, QtGui
+    from PyQt4.QtCore import QSettings
+except ImportError:
+    print("There was an error importing the Qt python3 libraries,")
+    print("These are required by to operate this program.")
+    print("If you are on Ubuntu/Debian, they should be available via APT.")
+    sys.exit("Could not import Python3 Qt Libraries.")
 
 # Airplay Things:
-import discovery
-
+try:
+    import discovery
+except:
+    sys.exit("Discovery module could not be loaded.")
 class Window(QtGui.QDialog):
     def __init__(self):
         super(Window, self).__init__()
