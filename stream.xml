@@ -1,0 +1,36 @@
+Example layout for device.airplay.local:7100/stream.xml
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>edid</key>
+	<data>
+	<!-- PRIVACY CONCERN: REMOVED -->
+	</data>
+	<key>height</key>
+	<integer>1080</integer>
+	<key>heightPhysical</key>
+	<integer>0</integer>
+	<key>heightPixels</key>
+	<integer>1080</integer>
+	<key>macAddress</key>
+	<string><!-- PRIVACY CONCERN: REMOVED --></string>
+	<key>overscanned</key>
+	<true/>
+	<key>refreshRate</key>
+	<real>0.016666666666666666</real>
+	<key>rotation</key>
+	<true/>
+	<key>uuid</key>
+	<string><!-- PRIVACY CONCERN: REMOVED --></string>
+	<key>version</key>
+	<string>220.68</string>
+	<key>width</key>
+	<integer>1920</integer>
+	<key>widthPhysical</key>
+	<integer>0</integer>
+	<key>widthPixels</key>
+	<integer>1920</integer>
+</dict>
+</plist>

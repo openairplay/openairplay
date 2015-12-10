@@ -5,9 +5,10 @@
 #  This application is licensed under the GNU GPLv3 License, included with
 #  this application source.
 
-global DEBUG = True
-
 import sys
+
+global DEBUG
+DEBUG = True
 
 if DEBUG:
     print("Debugging enabled.")

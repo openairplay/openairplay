@@ -1,0 +1,3337 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- saved from url=(0050)https://nto.github.io/AirPlay.html#screenmirroring -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta http-equiv="Content-language" content="en">
+    <meta name="keywords" content="airplay,airtunes,protocol,specification">
+    <meta name="author" content="Clément Vasseur">
+    <title>Unofficial AirPlay Protocol Specification</title>
+    <link rel="stylesheet" type="text/css" href="./Unofficial AirPlay Protocol Specification_files/AirPlay.css">
+    <script type="text/javascript">
+    /*
+
+           ____________________________
+          ( Stay hungry. Stay foolish. )
+           ----------------------------
+                  \   ^__^
+                   \  (oo)\_______
+                      (__)\       )\/\
+                          ||----w |
+                          ||     ||
+
+    */
+    </script>
+  </head>
+  <body>
+    <div id="content">
+      <h1 class="title">Unofficial AirPlay Protocol Specification</h1>
+      <ul class="toc">
+        <li><a href="https://nto.github.io/AirPlay.html#introduction">1. Introduction</a></li>
+        <li><a href="https://nto.github.io/AirPlay.html#servicediscovery">2. Service Discovery</a></li>
+        <li><ul>
+          <li><a href="https://nto.github.io/AirPlay.html#servicediscovery-airtunesservice">2.1. AirTunes service</a></li>
+          <li><a href="https://nto.github.io/AirPlay.html#servicediscovery-airplayservice">2.2. AirPlay Service</a></li>
+        </ul></li>
+        <li><a href="https://nto.github.io/AirPlay.html#photos">3. Photos</a></li>
+        <li><ul>
+          <li><a href="https://nto.github.io/AirPlay.html#photos-httprequests">3.1. HTTP requests</a></li>
+          <li><a href="https://nto.github.io/AirPlay.html#photos-events">3.2. Events</a></li>
+          <li><a href="https://nto.github.io/AirPlay.html#photos-photocaching">3.3. Photo Caching</a></li>
+          <li><a href="https://nto.github.io/AirPlay.html#photos-slideshows">3.4. Slideshows</a></li>
+        </ul></li>
+        <li><a href="https://nto.github.io/AirPlay.html#video">4. Video</a></li>
+        <li><ul>
+          <li><a href="https://nto.github.io/AirPlay.html#video-httprequests">4.1. HTTP requests</a></li>
+          <li><a href="https://nto.github.io/AirPlay.html#video-events">4.2. Events</a></li>
+        </ul></li>
+        <li><a href="https://nto.github.io/AirPlay.html#audio">5. Audio</a></li>
+        <li><ul>
+          <li><a href="https://nto.github.io/AirPlay.html#audio-rtsprequests">5.1. RTSP requests</a></li>
+          <li><a href="https://nto.github.io/AirPlay.html#audio-rtpstreams">5.2. RTP Streams</a></li>
+          <li><a href="https://nto.github.io/AirPlay.html#audio-volumecontrol">5.3. Volume Control</a></li>
+          <li><a href="https://nto.github.io/AirPlay.html#audio-metadata">5.4. Metadata</a></li>
+          <li><a href="https://nto.github.io/AirPlay.html#audio-airportexpressauthentication">5.5. AirPort Express Authentication</a></li>
+          <li><a href="https://nto.github.io/AirPlay.html#audio-remotecontrol">5.6. Remote Control</a></li>
+        </ul></li>
+        <li><a href="./Unofficial AirPlay Protocol Specification_files/Unofficial AirPlay Protocol Specification.html">6. Screen Mirroring</a></li>
+        <li><ul>
+          <li><a href="https://nto.github.io/AirPlay.html#screenmirroring-httprequests">6.1. HTTP requests</a></li>
+          <li><a href="https://nto.github.io/AirPlay.html#screenmirroring-streampackets">6.2. Stream Packets</a></li>
+          <li><a href="https://nto.github.io/AirPlay.html#screenmirroring-timesynchronization">6.3. Time Synchronization</a></li>
+        </ul></li>
+        <li><a href="https://nto.github.io/AirPlay.html#passwordprotection">7. Password Protection</a></li>
+        <li><a href="https://nto.github.io/AirPlay.html#history">8. History</a></li>
+        <li><a href="https://nto.github.io/AirPlay.html#resources">9. Resources</a></li>
+        <li><ul>
+          <li><a href="https://nto.github.io/AirPlay.html#resources-ietfrfcs">9.1. IETF RFCs</a></li>
+          <li><a href="https://nto.github.io/AirPlay.html#resources-ietfdrafts">9.2. IETF drafts</a></li>
+          <li><a href="https://nto.github.io/AirPlay.html#resources-appleprotocols">9.3. Apple Protocols</a></li>
+        </ul></li>
+      </ul>
+
+      <h1 id="introduction">1. Introduction</h1>
+      <p>AirPlay is a family of protocols implemented by Apple to view various
+      types of media content on the <em>Apple TV</em> from any iOS device or iTunes.
+      In this documentation, “<em>iOS device</em>” refers to an iPhone, iPod touch or
+      iPad. The following scenarios are supported by AirPlay:</p>
+
+      <ul>
+      <li><p>Display photos and slideshows from an iOS device.</p></li>
+      <li><p>Stream audio from an iOS device or iTunes.</p></li>
+      <li><p>Display videos from an iOS device or iTunes.</p></li>
+      <li><p>Show the screen content from an iOS device or OS X Mountain Lion.
+       This is called <em>AirPlay Mirroring</em>. It requires hardware capable of
+       encoding live video without taking too much CPU, so it is only
+       available on iPhone 4S, iPad 2, the new iPad, and Macs with Sandy
+       Bridge CPUs.</p></li>
+      </ul>
+
+      <p>Audio streaming is also supported from an iOS device or iTunes to an
+      AirPort Express base station or a 3<sup>rd</sup> party AirPlay-enabled audio
+      device. Initially this was called <em>AirTunes</em>, but it was later renamed
+      to AirPlay when Apple added video support for the Apple TV.</p>
+
+      <p>This document describes these protocols, as implemented in Apple TV
+      software version 5.0, iOS 5.1 and iTunes 10.6. They are based on
+      well-known standard networking protocols such as <em>Multicast DNS</em>,
+      <em>HTTP</em>, <em>RTSP</em>, <em>RTP</em> or <em>NTP</em>, with custom extensions.</p>
+
+      <p>All these information have been gathered by using various techniques of
+      reverse engineering, so they might be somewhat inaccurate and
+      incomplete. Moreover, this document does not explain how to circumvent
+      any kind of security implemented by Apple:</p>
+
+      <ul>
+      <li><p>It does not give any RSA keys.</p></li>
+      <li><p>It does not explain how to decode iTunes videos protected with the
+       <em>FairPlay</em> DRM.</p></li>
+      <li><p>It does not explain the FairPlay authentication (SAPv2.5) used by iOS
+       devices and OS X Mountain Lion to protect audio and screen content.</p></li>
+      </ul>
+
+      <p>Please don’t e-mail me about this, I won’t reply. In fact, none of this
+      is actually required to be able to view media content on Apple TV.</p>
+
+      <h1 id="servicediscovery">2. Service Discovery</h1>
+      <p>AirPlay does not require any configuration to be able to find compatible
+      devices on the network, thanks to <a href="http://www.ietf.org/id/draft-cheshire-dnsext-dns-sd-11.txt">DNS-based service discovery</a>, based
+      on <a href="http://www.ietf.org/id/draft-cheshire-dnsext-multicastdns-15.txt">multicast DNS</a>, aka <em>Bonjour</em>.</p>
+
+      <p>An AirPlay device such as the Apple TV publishes two services. The first
+      one is <em>RAOP</em> (<a href="http://en.wikipedia.org/wiki/Remote_Audio_Output_Protocol">Remote Audio Output Protocol</a>), used for audio
+      streaming, and the other one is the AirPlay service, for photo and video
+      content.</p>
+
+      <h2 id="servicediscovery-airtunesservice">2.1. AirTunes service</h2>
+      <p class="caption">RAOP service from Apple TV</p>
+
+      <pre><code>name: 5855CA1AE288@Apple TV
+type: _raop._tcp
+port: 49152
+txt:
+ txtvers=1
+ ch=2
+ cn=0,1,2,3
+ da=true
+ et=0,3,5
+ md=0,1,2
+ pw=false
+ sv=false
+ sr=44100
+ ss=16
+ tp=UDP
+ vn=65537
+ vs=130.14
+ am=AppleTV2,1
+ sf=0x4
+</code></pre>
+
+      <p>The name is formed using the MAC address of the device and the name of
+      the remote speaker which will be shown by the clients.</p>
+
+      <p>The following fields appear in the TXT record:</p>
+
+      <table>
+      <colgroup>
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      </colgroup>
+
+      <thead>
+      <tr>
+       <th style="text-align:left;">name</th>
+       <th style="text-align:left;">value</th>
+       <th style="text-align:left;">description</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+       <td style="text-align:left;"><code>txtvers</code></td>
+       <td style="text-align:left;">1</td>
+       <td style="text-align:left;">TXT record version 1</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>ch</code></td>
+       <td style="text-align:left;">2</td>
+       <td style="text-align:left;">audio channels: stereo</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>cn</code></td>
+       <td style="text-align:left;">0,1,2,3</td>
+       <td style="text-align:left;">audio codecs</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>et</code></td>
+       <td style="text-align:left;">0,3,5</td>
+       <td style="text-align:left;">supported encryption types</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>md</code></td>
+       <td style="text-align:left;">0,1,2</td>
+       <td style="text-align:left;">supported metadata types</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>pw</code></td>
+       <td style="text-align:left;">false</td>
+       <td style="text-align:left;">does the speaker require a password?</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>sr</code></td>
+       <td style="text-align:left;">44100</td>
+       <td style="text-align:left;">audio sample rate: 44100 Hz</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>ss</code></td>
+       <td style="text-align:left;">16</td>
+       <td style="text-align:left;">audio sample size: 16-bit</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>tp</code></td>
+       <td style="text-align:left;">UDP</td>
+       <td style="text-align:left;">supported transport: TCP or UDP</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>vs</code></td>
+       <td style="text-align:left;">130.14</td>
+       <td style="text-align:left;">server version 130.14</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>am</code></td>
+       <td style="text-align:left;">AppleTV2,1</td>
+       <td style="text-align:left;">device model</td>
+      </tr>
+      </tbody>
+      </table>
+      <h3>Audio codecs</h3>
+
+      <table>
+      <colgroup>
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      </colgroup>
+
+      <thead>
+      <tr>
+       <th style="text-align:left;">cn</th>
+       <th style="text-align:left;">description</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+       <td style="text-align:left;">0</td>
+       <td style="text-align:left;">PCM</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">1</td>
+       <td style="text-align:left;">Apple Lossless (ALAC)</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">2</td>
+       <td style="text-align:left;">AAC</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">3</td>
+       <td style="text-align:left;">AAC ELD (Enhanced Low Delay)</td>
+      </tr>
+      </tbody>
+      </table>
+      <h3>Encryption Types</h3>
+
+      <table>
+      <colgroup>
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      </colgroup>
+
+      <thead>
+      <tr>
+       <th style="text-align:left;">et</th>
+       <th style="text-align:left;">description</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+       <td style="text-align:left;">0</td>
+       <td style="text-align:left;">no encryption</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">1</td>
+       <td style="text-align:left;">RSA (AirPort Express)</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">3</td>
+       <td style="text-align:left;">FairPlay</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">4</td>
+       <td style="text-align:left;">MFiSAP (3rd-party devices)</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">5</td>
+       <td style="text-align:left;">FairPlay SAPv2.5</td>
+      </tr>
+      </tbody>
+      </table>
+      <h3>Metadata Types</h3>
+
+      <table>
+      <colgroup>
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      </colgroup>
+
+      <thead>
+      <tr>
+       <th style="text-align:left;">md</th>
+       <th style="text-align:left;">description</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+       <td style="text-align:left;">0</td>
+       <td style="text-align:left;">text</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">1</td>
+       <td style="text-align:left;">artwork</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">2</td>
+       <td style="text-align:left;">progress</td>
+      </tr>
+      </tbody>
+      </table>
+      <h2 id="servicediscovery-airplayservice">2.2. AirPlay Service</h2>
+      <p class="caption">AirPlay service</p>
+
+      <pre><code>name: Apple TV
+type: _airplay._tcp
+port: 7000
+txt:
+ deviceid=58:55:CA:1A:E2:88
+ features=0x39f7
+ model=AppleTV2,1
+ srcvers=130.14
+</code></pre>
+
+      <p>The following fields are available in the TXT record:</p>
+
+      <table>
+      <colgroup>
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      </colgroup>
+
+      <thead>
+      <tr>
+       <th style="text-align:left;">name</th>
+       <th style="text-align:left;">value</th>
+       <th style="text-align:left;">description</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+       <td style="text-align:left;"><code>model</code></td>
+       <td style="text-align:left;">AppleTV2,1</td>
+       <td style="text-align:left;">device model</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>deviceid</code></td>
+       <td style="text-align:left;">58:55:CA:1A:E2:88</td>
+       <td style="text-align:left;">MAC address of the device</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>features</code></td>
+       <td style="text-align:left;">0x39f7</td>
+       <td style="text-align:left;">bitfield of supported features</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>pw</code></td>
+       <td style="text-align:left;">1</td>
+       <td style="text-align:left;">server is password protected</td>
+      </tr>
+      </tbody>
+      </table>
+      <p>The <code>pw</code> field appears only if the AirPlay server is password protected.
+      Otherwise it is not included in the TXT record.</p>
+
+      <p>The <code>features</code> bitfield allows the following features to be defined:</p>
+
+      <table>
+      <colgroup>
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      </colgroup>
+
+      <thead>
+      <tr>
+       <th style="text-align:left;">bit</th>
+       <th style="text-align:left;">name</th>
+       <th style="text-align:left;">description</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+       <td style="text-align:left;">0</td>
+       <td style="text-align:left;"><code>Video</code></td>
+       <td style="text-align:left;">video supported</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">1</td>
+       <td style="text-align:left;"><code>Photo</code></td>
+       <td style="text-align:left;">photo supported</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">2</td>
+       <td style="text-align:left;"><code>VideoFairPlay</code></td>
+       <td style="text-align:left;">video protected with FairPlay DRM</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">3</td>
+       <td style="text-align:left;"><code>VideoVolumeControl</code></td>
+       <td style="text-align:left;">volume control supported for videos</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">4</td>
+       <td style="text-align:left;"><code>VideoHTTPLiveStreams</code></td>
+       <td style="text-align:left;">http live streaming supported</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">5</td>
+       <td style="text-align:left;"><code>Slideshow</code></td>
+       <td style="text-align:left;">slideshow supported</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">7</td>
+       <td style="text-align:left;"><code>Screen</code></td>
+       <td style="text-align:left;">mirroring supported</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">8</td>
+       <td style="text-align:left;"><code>ScreenRotate</code></td>
+       <td style="text-align:left;">screen rotation supported</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">9</td>
+       <td style="text-align:left;"><code>Audio</code></td>
+       <td style="text-align:left;">audio supported</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">11</td>
+       <td style="text-align:left;"><code>AudioRedundant</code></td>
+       <td style="text-align:left;">audio packet redundancy supported</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">12</td>
+       <td style="text-align:left;"><code>FPSAPv2pt5_AES_GCM</code></td>
+       <td style="text-align:left;">FairPlay secure auth supported</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">13</td>
+       <td style="text-align:left;"><code>PhotoCaching</code></td>
+       <td style="text-align:left;">photo preloading supported</td>
+      </tr>
+      </tbody>
+      </table>
+      <p>Note that the Apple TV does not support <code>VideoVolumeControl</code>. It has
+      probably been introduced for the upcoming Apple television.</p>
+
+      <p>The AirPlay server is a <em>HTTP</em> server (<a href="http://www.ietf.org/rfc/rfc2616.txt">RFC 2616</a>). Two connections are
+      made to this server, the second one being used as a <a href="http://tools.ietf.org/id/draft-lentczner-rhttp-00.txt">reverse HTTP</a>
+      connection. This allows a client to receive asynchronous events, such
+      as playback status changes, from a server.</p>
+
+      <p>All HTTP requests share some common headers:</p>
+
+      <table>
+      <colgroup>
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      </colgroup>
+
+      <thead>
+      <tr>
+       <th style="text-align:left;">name</th>
+       <th style="text-align:left;">value</th>
+       <th style="text-align:left;">description</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+       <td style="text-align:left;"><code>X-Apple-Session-ID</code></td>
+       <td style="text-align:left;">1bd6ceeb…</td>
+       <td style="text-align:left;">UUID for the session</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>X-Apple-Device-ID</code></td>
+       <td style="text-align:left;">0xdc2b61a0ce79</td>
+       <td style="text-align:left;">MAC address</td>
+      </tr>
+      </tbody>
+      </table>
+      <p>The reverse connection looks like this:</p>
+
+      <p class="cli_srv">client → server</p>
+
+      <pre><code>POST /reverse
+Upgrade: PTTH/1.0
+Connection: Upgrade
+X-Apple-Purpose: event
+Content-Length: 0
+User-Agent: MediaControl/1.0
+X-Apple-Session-ID: 1bd6ceeb-fffd-456c-a09c-996053a7a08c
+</code></pre>
+
+      <p class="srv_cli">server → client</p>
+
+      <pre><code>HTTP/1.1 101 Switching Protocols
+Date: Thu, 23 Feb 2012 17:33:41 GMT
+Upgrade: PTTH/1.0
+Connection: Upgrade
+</code></pre>
+
+      <p>The <code>X-Apple-Purpose</code> header makes it clear that this connection is used
+      for sending events to the client, whereas <code>X-Apple-Session-ID</code> is used
+      to link this connection to the other (non-reverse) one. Events are
+      delivered using a <code>POST</code> request for sending an XML property list to the
+      <code>/event</code> location.</p>
+
+      <h1 id="photos">3. Photos</h1>
+      <p>Photos are <em>JPEG</em> data transmitted using a <code>PUT</code> request to the AirPlay
+      server. They can be displayed immediately, or cached for future use.</p>
+
+      <h2 id="photos-httprequests">3.1. HTTP requests</h2>
+      <h3>GET /slideshow-features</h3>
+
+      <p>A client can fetch the list of available transitions for slideshows.
+      Then it can let the user pick one, before starting a slideshow. The
+      <code>Accept-Language</code> header is used to specify in which language the
+      transition names should be.</p>
+
+      <p class="cli_srv">client → server</p>
+
+      <pre><code>GET /slideshow-features HTTP/1.1
+Accept-Language: English
+Content-Length: 0
+User-Agent: MediaControl/1.0
+X-Apple-Session-ID: cdda804c-33ae-4a0b-a5f2-f0e532fd5abd
+</code></pre>
+
+      <p class="srv_cli">server → client</p>
+
+      <pre><code>HTTP/1.1 200 OK
+Date: Thu, 23 Feb 2012 17:33:41 GMT
+Content-Type: text/x-apple-plist+xml
+Content-Length: 6411
+
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+ "http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;
+&lt;plist version="1.0"&gt;
+ &lt;dict&gt;
+  &lt;key&gt;themes&lt;/key&gt;
+  &lt;array&gt;
+   &lt;dict&gt;
+    &lt;key&gt;key&lt;/key&gt;
+    &lt;string&gt;Reflections&lt;/string&gt;
+    &lt;key&gt;name&lt;/key&gt;
+    &lt;string&gt;Reflections&lt;/string&gt;
+   &lt;/dict&gt;
+   ...
+  &lt;/array&gt;
+ &lt;/dict&gt;
+&lt;/plist&gt;
+</code></pre>
+
+      <h3>PUT /photo</h3>
+
+      <p>Send a JPEG picture to the server. The following headers are supported:</p>
+
+      <table>
+      <colgroup>
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      </colgroup>
+
+      <thead>
+      <tr>
+       <th style="text-align:left;">name</th>
+       <th style="text-align:left;">description</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+       <td style="text-align:left;"><code>X-Apple-AssetKey</code></td>
+       <td style="text-align:left;">UUID for the picture</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>X-Apple-Transition</code></td>
+       <td style="text-align:left;">transition that should be used to show the picture</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>X-Apple-AssetAction</code></td>
+       <td style="text-align:left;">specify a caching operation</td>
+      </tr>
+      </tbody>
+      </table>
+      <p><span class="ex">Example 1:</span> show a picture without any transition (for the first time)</p>
+
+      <p class="cli_srv">client → server</p>
+
+      <pre><code>PUT /photo HTTP/1.1
+X-Apple-AssetKey: F92F9B91-954E-4D63-BB9A-EEC771ADE6E8
+Content-Length: 462848
+User-Agent: MediaControl/1.0
+X-Apple-Session-ID: 1bd6ceeb-fffd-456c-a09c-996053a7a08c
+
+&lt;JPEG DATA&gt;
+</code></pre>
+
+      <p class="srv_cli">server → client</p>
+
+      <pre><code>HTTP/1.1 200 OK
+Date: Thu, 23 Feb 2012 17:33:42 GMT
+Content-Length: 0
+</code></pre>
+
+      <p><span class="ex">Example 2:</span> show a picture using the dissolve transition</p>
+
+      <p class="cli_srv">client → server</p>
+
+      <pre><code>PUT /photo HTTP/1.1
+X-Apple-AssetKey: F92F9B91-954E-4D63-BB9A-EEC771ADE6E8
+X-Apple-Transition: Dissolve
+Content-Length: 462848
+User-Agent: MediaControl/1.0
+X-Apple-Session-ID: 1bd6ceeb-fffd-456c-a09c-996053a7a08c
+
+&lt;JPEG DATA&gt;
+</code></pre>
+
+      <p class="srv_cli">server → client</p>
+
+      <pre><code>HTTP/1.1 200 OK
+Date: Thu, 23 Feb 2012 17:33:42 GMT
+Content-Length: 0
+</code></pre>
+
+      <h3>PUT /slideshows/1</h3>
+
+      <p>Start or stop a slideshow session. When starting, slideshow settings
+      such as the slide duration and selected transition theme are
+      transmitted. The following parameters are sent in an XML property list:</p>
+
+      <table>
+      <colgroup>
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      </colgroup>
+
+      <thead>
+      <tr>
+       <th style="text-align:left;">key</th>
+       <th style="text-align:left;">type</th>
+       <th style="text-align:left;">description</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+       <td style="text-align:left;">settings.slideDuration</td>
+       <td style="text-align:left;">integer</td>
+       <td style="text-align:left;">slide duration in seconds</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">settings.theme</td>
+       <td style="text-align:left;">string</td>
+       <td style="text-align:left;">selected transition theme</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">state</td>
+       <td style="text-align:left;">string</td>
+       <td style="text-align:left;"><code>playing</code> or <code>stopped</code></td>
+      </tr>
+      </tbody>
+      </table>
+      <p><span class="ex">Example:</span> send slideshow settings</p>
+
+      <p class="cli_srv">client → server</p>
+
+      <pre><code>PUT /slideshows/1 HTTP/1.1
+Content-Type: text/x-apple-plist+xml
+Content-Length: 366
+User-Agent: MediaControl/1.0
+X-Apple-Session-ID: 98a7b246-8e00-49a6-8765-db57165f5b67
+
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+ "http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;
+&lt;plist version="1.0"&gt;
+ &lt;dict&gt;
+  &lt;key&gt;settings&lt;/key&gt;
+  &lt;dict&gt;
+   &lt;key&gt;slideDuration&lt;/key&gt;
+   &lt;integer&gt;3&lt;/integer&gt;
+   &lt;key&gt;theme&lt;/key&gt;
+   &lt;string&gt;Classic&lt;/string&gt;
+  &lt;/dict&gt;
+  &lt;key&gt;state&lt;/key&gt;
+  &lt;string&gt;playing&lt;/string&gt;
+ &lt;/dict&gt;
+&lt;/plist&gt;
+</code></pre>
+
+      <p class="srv_cli">server → client</p>
+
+      <pre><code>HTTP/1.1 200 OK
+Date: Thu, 08 Mar 2012 16:30:01 GMT
+Content-Type: text/x-apple-plist+xml
+Content-Length: 181
+
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+ "http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;
+&lt;plist version="1.0"&gt;
+ &lt;dict/&gt;
+&lt;/plist&gt;
+</code></pre>
+
+      <h3>POST /stop</h3>
+
+      <p>Stop a photo or slideshow session.</p>
+
+      <p class="cli_srv">client → server</p>
+
+      <pre><code>POST /stop HTTP/1.1
+Content-Length: 0
+User-Agent: MediaControl/1.0
+X-Apple-Session-ID: 1bd6ceeb-fffd-456c-a09c-996053a7a08c
+</code></pre>
+
+      <p class="srv_cli">server → client</p>
+
+      <pre><code>HTTP/1.1 200 OK
+Date: Thu, 23 Feb 2012 17:33:55 GMT
+Content-Length: 0
+</code></pre>
+
+      <h2 id="photos-events">3.2. Events</h2>
+      <h3>Photo</h3>
+
+      <p>This event notifies a client that a photo session has ended. Then the
+      server can safely disconnect.</p>
+
+      <table>
+      <colgroup>
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      </colgroup>
+
+      <thead>
+      <tr>
+       <th style="text-align:left;">key</th>
+       <th style="text-align:left;">type</th>
+       <th style="text-align:left;">description</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+       <td style="text-align:left;">category</td>
+       <td style="text-align:left;">string</td>
+       <td style="text-align:left;"><code>photo</code></td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">sessionID</td>
+       <td style="text-align:left;">integer</td>
+       <td style="text-align:left;">session ID</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">state</td>
+       <td style="text-align:left;">string</td>
+       <td style="text-align:left;"><code>stopped</code></td>
+      </tr>
+      </tbody>
+      </table>
+      <p><span class="ex">Example:</span> stop photo session</p>
+
+      <p class="srv_cli">server → client</p>
+
+      <pre><code>POST /event HTTP/1.1
+Content-Type: text/x-apple-plist+xml
+Content-Length: 277
+X-Apple-Session-ID: 1bd6ceeb-fffd-456c-a09c-996053a7a08c
+
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+ "http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;
+&lt;plist version="1.0"&gt;
+ &lt;dict&gt;
+  &lt;key&gt;category&lt;/key&gt;
+  &lt;string&gt;photo&lt;/string&gt;
+  &lt;key&gt;sessionID&lt;/key&gt;
+  &lt;integer&gt;38&lt;/integer&gt;
+  &lt;key&gt;state&lt;/key&gt;
+  &lt;string&gt;stopped&lt;/string&gt;
+ &lt;/dict&gt;
+&lt;/plist&gt;
+</code></pre>
+
+      <p class="cli_srv">client → server</p>
+
+      <pre><code>HTTP/1.1 200 OK
+Content-Length: 0
+</code></pre>
+
+      <h3>Slideshow</h3>
+
+      <p>Slideshow events are used to notify the server about the playback state.</p>
+
+      <table>
+      <colgroup>
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      </colgroup>
+
+      <thead>
+      <tr>
+       <th style="text-align:left;">key</th>
+       <th style="text-align:left;">type</th>
+       <th style="text-align:left;">description</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+       <td style="text-align:left;">category</td>
+       <td style="text-align:left;">string</td>
+       <td style="text-align:left;"><code>slideshow</code></td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">lastAssetID</td>
+       <td style="text-align:left;">integer</td>
+       <td style="text-align:left;">last asset ID</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">sessionID</td>
+       <td style="text-align:left;">integer</td>
+       <td style="text-align:left;">session ID</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">state</td>
+       <td style="text-align:left;">string</td>
+       <td style="text-align:left;"><code>loading</code>, <code>playing</code> or <code>stopped</code></td>
+      </tr>
+      </tbody>
+      </table>
+      <p><span class="ex">Example:</span> slideshow is currently playing</p>
+
+      <p class="srv_cli">server → client</p>
+
+      <pre><code>POST /event HTTP/1.1
+Content-Type: text/x-apple-plist+xml
+Content-Length: 371
+X-Apple-Session-ID: f1634b51-5cae-4384-ade5-54f4159a15f1
+
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+ "http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;
+&lt;plist version="1.0"&gt;
+ &lt;dict&gt;
+  &lt;key&gt;category&lt;/key&gt;
+  &lt;string&gt;slideshow&lt;/string&gt;
+  &lt;key&gt;lastAssetID&lt;/key&gt;
+  &lt;integer&gt;5&lt;/integer&gt;
+  &lt;key&gt;sessionID&lt;/key&gt;
+  &lt;integer&gt;4&lt;/integer&gt;
+  &lt;key&gt;state&lt;/key&gt;
+  &lt;string&gt;playing&lt;/string&gt;
+ &lt;/dict&gt;
+&lt;/plist&gt;
+</code></pre>
+
+      <p class="cli_srv">client → server</p>
+
+      <pre><code>HTTP/1.1 200 OK
+Content-Length: 0
+</code></pre>
+
+      <h2 id="photos-photocaching">3.3. Photo Caching</h2>
+      <p>AirPlay supports preloading picture data to improve transition latency.
+      This works by preloading a few pictures (most likely the ones before and
+      after the current picture) just after displaying one.</p>
+
+      <p>Preloading is achieved using the <code>cacheOnly</code> asset action. Upon
+      receiving this request, a server stores the picture in its cache. Later,
+      a client can request the display of this picture using the
+      <code>displayCached</code> asset action and the same asset key. This is much faster
+      than a full picture upload because no additional data is transmitted.</p>
+
+      <p>When asked for a picture which is no longer in the cache, a server
+      replies with an HTTP 412 error code (Precondition Failed).</p>
+
+      <p><span class="ex">Example 1:</span> cache a picture for future display</p>
+
+      <p class="cli_srv">client → server</p>
+
+      <pre><code>PUT /photo HTTP/1.1
+X-Apple-AssetAction: cacheOnly
+X-Apple-AssetKey: B0DDE2C0-6FDD-48F8-9E5B-29CE0618DF5B
+Content-Length: 462848
+User-Agent: MediaControl/1.0
+X-Apple-Session-ID: 1bd6ceeb-fffd-456c-a09c-996053a7a08c
+
+&lt;JPEG DATA&gt;
+</code></pre>
+
+      <p class="srv_cli">server → client</p>
+
+      <pre><code>HTTP/1.1 200 OK
+Date: Thu, 23 Feb 2012 17:33:45 GMT
+Content-Length: 0
+</code></pre>
+
+      <p><span class="ex">Example 2:</span> show a cached picture</p>
+
+      <p class="cli_srv">client → server</p>
+
+      <pre><code>PUT /photo HTTP/1.1
+X-Apple-AssetAction: displayCached
+X-Apple-AssetKey: B0DDE2C0-6FDD-48F8-9E5B-29CE0618DF5B
+X-Apple-Transition: Dissolve
+Content-Length: 0
+User-Agent: MediaControl/1.0
+X-Apple-Session-ID: 1bd6ceeb-fffd-456c-a09c-996053a7a08c
+</code></pre>
+
+      <p class="srv_cli">server → client</p>
+
+      <pre><code>HTTP/1.1 200 OK
+Date: Thu, 23 Feb 2012 17:33:45 GMT
+Content-Length: 0
+</code></pre>
+
+      <h2 id="photos-slideshows">3.4. Slideshows</h2>
+      <p>Slideshows are using the reverse HTTP connection for asynchronous
+      loading of pictures. Three connections are performed in parallel. The
+      <code>X-Apple-Purpose</code> header is set to <code>slideshow</code>. A <code>GET</code> request to the
+      <code>/slideshows/1/assets/1</code> location is issued to fetch a new picture from
+      the AirPlay client. A binary property list with the following parameters
+      is expected as reply:</p>
+
+      <table>
+      <colgroup>
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      </colgroup>
+
+      <thead>
+      <tr>
+       <th style="text-align:left;">key</th>
+       <th style="text-align:left;">type</th>
+       <th style="text-align:left;">description</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+       <td style="text-align:left;">data</td>
+       <td style="text-align:left;">data</td>
+       <td style="text-align:left;">JPEG picture</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">info.id</td>
+       <td style="text-align:left;">integer</td>
+       <td style="text-align:left;">asset ID</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">info.key</td>
+       <td style="text-align:left;">integer</td>
+       <td style="text-align:left;">1</td>
+      </tr>
+      </tbody>
+      </table>
+      <p><span class="ex">Example:</span> fetch a new picture</p>
+
+      <p class="srv_cli">server → client</p>
+
+      <pre><code>GET /slideshows/1/assets/1 HTTP/1.1
+Content-Length: 0
+Accept: application/x-apple-binary-plist
+X-Apple-Session-ID: 98a7b246-8e00-49a6-8765-db57165f5b67
+</code></pre>
+
+      <p class="cli_srv">client → server</p>
+
+      <pre><code>HTTP/1.1 200 OK
+Content-Type: application/x-apple-binary-plist
+Content-Length: 58932
+
+&lt;BINARY PLIST DATA&gt;
+
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+ "http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;
+&lt;plist version="1.0"&gt;
+ &lt;dict&gt;
+  &lt;key&gt;data&lt;/key&gt;
+  &lt;data&gt;
+  ...
+  &lt;/data&gt;
+  &lt;key&gt;info&lt;/key&gt;
+  &lt;dict&gt;
+   &lt;key&gt;id&lt;/key&gt;
+   &lt;integer&gt;1&lt;/integer&gt;
+   &lt;key&gt;key&lt;/key&gt;
+   &lt;string&gt;1&lt;/string&gt;
+  &lt;/dict&gt;
+ &lt;/dict&gt;
+&lt;/plist&gt;
+</code></pre>
+
+      <h1 id="video">4. Video</h1>
+      <p>In order to play a video on an AirPlay server, HTTP requests are used to
+      send a video URL, perform scrubbing, change the playback rate and update
+      the timeline.</p>
+
+      <h2 id="video-httprequests">4.1. HTTP requests</h2>
+      <h3>GET /server-info</h3>
+
+      <p>Fetch general informations about the AirPlay server. These informations
+      are returned as an XML property list, with the following properties:</p>
+
+      <table>
+      <colgroup>
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      </colgroup>
+
+      <thead>
+      <tr>
+       <th style="text-align:left;">key</th>
+       <th style="text-align:left;">type</th>
+       <th style="text-align:left;">value</th>
+       <th style="text-align:left;">description</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+       <td style="text-align:left;">deviceid</td>
+       <td style="text-align:left;">string</td>
+       <td style="text-align:left;">58:55:CA:1A:E2:88</td>
+       <td style="text-align:left;">MAC address</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">features</td>
+       <td style="text-align:left;">integer</td>
+       <td style="text-align:left;">14839</td>
+       <td style="text-align:left;">0x39f7</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">model</td>
+       <td style="text-align:left;">string</td>
+       <td style="text-align:left;">AppleTV2,1</td>
+       <td style="text-align:left;">device model</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">protovers</td>
+       <td style="text-align:left;">string</td>
+       <td style="text-align:left;">1.0</td>
+       <td style="text-align:left;">protocol version</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">srcvers</td>
+       <td style="text-align:left;">string</td>
+       <td style="text-align:left;">120.2</td>
+       <td style="text-align:left;">server version</td>
+      </tr>
+      </tbody>
+      </table>
+      <p>The <code>model</code>, <code>deviceid</code>, <code>srcvers</code> and <code>features</code> properties are the
+      same as broadcasted by the mDNS AirPlay service.</p>
+
+      <p><span class="ex">Example:</span> fetch server informations</p>
+
+      <p class="cli_srv">client → server</p>
+
+      <pre><code>GET /server-info HTTP/1.1
+X-Apple-Device-ID: 0xdc2b61a0ce79
+Content-Length: 0
+User-Agent: MediaControl/1.0
+X-Apple-Session-ID: 1bd6ceeb-fffd-456c-a09c-996053a7a08c
+</code></pre>
+
+      <p class="srv_cli">server → client</p>
+
+      <pre><code>HTTP/1.1 200 OK
+Date: Thu, 23 Feb 2012 17:33:41 GMT
+Content-Type: text/x-apple-plist+xml
+Content-Length: 427
+
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+ "http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;
+&lt;plist version="1.0"&gt;
+ &lt;dict&gt;
+  &lt;key&gt;deviceid&lt;/key&gt;
+  &lt;string&gt;58:55:CA:1A:E2:88&lt;/string&gt;
+  &lt;key&gt;features&lt;/key&gt;
+  &lt;integer&gt;14839&lt;/integer&gt;
+  &lt;key&gt;model&lt;/key&gt;
+  &lt;string&gt;AppleTV2,1&lt;/string&gt;
+  &lt;key&gt;protovers&lt;/key&gt;
+  &lt;string&gt;1.0&lt;/string&gt;
+  &lt;key&gt;srcvers&lt;/key&gt;
+  &lt;string&gt;120.2&lt;/string&gt;
+ &lt;/dict&gt;
+&lt;/plist&gt;
+</code></pre>
+
+      <h3>POST /play</h3>
+
+      <p>Start video playback. The body contains the following parameters:</p>
+
+      <table>
+      <colgroup>
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      </colgroup>
+
+      <thead>
+      <tr>
+       <th style="text-align:left;">name</th>
+       <th style="text-align:left;">type</th>
+       <th style="text-align:left;">description</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+       <td style="text-align:left;"><code>Content-Location</code></td>
+       <td style="text-align:left;">URL</td>
+       <td style="text-align:left;">URL for the video</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>Start-Position</code></td>
+       <td style="text-align:left;">float</td>
+       <td style="text-align:left;">starting position between 0 and 1</td>
+      </tr>
+      </tbody>
+      </table>
+      <p>MP4 movies are supported using progressive download. <a href="http://tools.ietf.org/id/draft-pantos-http-live-streaming-07.txt">HTTP Live Streaming</a>
+      might be supported as well, as indicated by the <code>VideoHTTPLiveStreams</code>
+      feature flag. The relative starting position, a float value between 0
+      (beginning) and 1 (end) is used to start playing a video at the exact same
+      position as it was on the client.</p>
+
+      <p>A binary property list can also be used instead of text parameters, with
+      content type <code>application/x-apple-binary-plist</code>.</p>
+
+      <p><span class="ex">Example 1:</span> video playback from iTunes</p>
+
+      <p class="cli_srv">client → server</p>
+
+      <pre><code>POST /play HTTP/1.1
+User-Agent: iTunes/10.6 (Macintosh; Intel Mac OS X 10.7.3) AppleWebKit/535.18.5
+Content-Length: 163
+Content-Type: text/parameters
+
+Content-Location: http://192.168.1.18:3689/airplay.mp4?database-spec='dmap.persistentid:0x63b5e5c0c201542e'&amp;item-spec='dmap.itemid:0x21d'
+Start-Position: 0.174051
+</code></pre>
+
+      <p class="srv_cli">server → client</p>
+
+      <pre><code>HTTP/1.1 200 OK
+Date: Mon, 08 Mar 2012 18:08:25 GMT
+Content-Length: 0
+</code></pre>
+
+      <p><span class="ex">Example 2:</span> video playback from iPhone</p>
+
+      <p class="cli_srv">client → server</p>
+
+      <pre><code>POST /play HTTP/1.1
+X-Transmit-Date: 2012-03-16T14:20:39.656533Z
+Content-Type: application/x-apple-binary-plist
+Content-Length: 491
+User-Agent: MediaControl/1.0
+X-Apple-Session-ID: 368e90a4-5de6-4196-9e58-9917bdd4ffd7
+
+&lt;BINARY PLIST DATA&gt;
+
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+ "http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;
+&lt;plist version="1.0"&gt;
+ &lt;dict&gt;
+  &lt;key&gt;Content-Location&lt;/key&gt;
+  &lt;string&gt;http://redirector.c.youtube.com/videoplayback?...&lt;/string&gt;
+  &lt;key&gt;Start-Position&lt;/key&gt;
+  &lt;real&gt;0.024613151326775551&lt;/real&gt;
+ &lt;/dict&gt;
+&lt;/plist&gt;
+</code></pre>
+
+      <p class="srv_cli">server → client</p>
+
+      <pre><code>HTTP/1.1 200 OK
+</code></pre>
+
+      <h3>POST /scrub</h3>
+
+      <p>Seek at an arbitrary location in the video. The <code>position</code> argument is a
+      float value representing the location in seconds.</p>
+
+      <p><span class="ex">Example:</span> seek to about 20 seconds</p>
+
+      <p class="cli_srv">client → server</p>
+
+      <pre><code>POST /scrub?position=20.097000 HTTP/1.1
+User-Agent: iTunes/10.6 (Macintosh; Intel Mac OS X 10.7.3) AppleWebKit/535.18.5
+Content-Length: 0
+</code></pre>
+
+      <p class="srv_cli">server → client</p>
+
+      <pre><code>HTTP/1.1 200 OK
+Date: Mon, 08 Mar 2012 18:08:42 GMT
+Content-Length: 0
+</code></pre>
+
+      <h3>POST /rate</h3>
+
+      <p>Change the playback rate. The <code>value</code> argument is a float value
+      representing the playback rate: 0 is paused, 1 is playing at the normal
+      speed.</p>
+
+      <p><span class="ex">Example:</span> pause playback</p>
+
+      <p class="cli_srv">client → server</p>
+
+      <pre><code>POST /rate?value=0.000000 HTTP/1.1
+User-Agent: iTunes/10.6 (Macintosh; Intel Mac OS X 10.7.3) AppleWebKit/535.18.5
+Content-Length: 0
+</code></pre>
+
+      <p class="srv_cli">server → client</p>
+
+      <pre><code>HTTP/1.1 200 OK
+Date: Mon, 08 Mar 2012 18:08:37 GMT
+Content-Length: 0
+</code></pre>
+
+      <h3>POST /stop</h3>
+
+      <p>Stop playback.</p>
+
+      <p><span class="ex">Example:</span> stop playback</p>
+
+      <p class="cli_srv">client → server</p>
+
+      <pre><code>POST /stop HTTP/1.1
+User-Agent: iTunes/10.6 (Macintosh; Intel Mac OS X 10.7.3) AppleWebKit/535.18.5
+Content-Length: 0
+</code></pre>
+
+      <p class="srv_cli">server → client</p>
+
+      <pre><code>HTTP/1.1 200 OK
+Date: Mon, 08 Mar 2012 18:09:06 GMT
+Content-Length: 0
+</code></pre>
+
+      <h3>GET /scrub</h3>
+
+      <p>Retrieve the current playback position. This can be called repeatedly to
+      update a timeline on the client. The following parameters are returned:</p>
+
+      <table>
+      <colgroup>
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      </colgroup>
+
+      <thead>
+      <tr>
+       <th style="text-align:left;">name</th>
+       <th style="text-align:left;">type</th>
+       <th style="text-align:left;">description</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+       <td style="text-align:left;"><code>duration</code></td>
+       <td style="text-align:left;">float</td>
+       <td style="text-align:left;">duration in seconds</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>position</code></td>
+       <td style="text-align:left;">float</td>
+       <td style="text-align:left;">position in seconds</td>
+      </tr>
+      </tbody>
+      </table>
+      <p><span class="ex">Example:</span> fetch current playback progress</p>
+
+      <p class="cli_srv">client → server</p>
+
+      <pre><code>GET /scrub HTTP/1.1
+User-Agent: iTunes/10.6 (Macintosh; Intel Mac OS X 10.7.3) AppleWebKit/535.18.5
+Content-Length: 0
+</code></pre>
+
+      <p class="srv_cli">server → client</p>
+
+      <pre><code>HTTP/1.1 200 OK
+Date: Mon, 08 Mar 2012 18:08:31 GMT
+Content-Type: text/parameters
+Content-Length: 40
+
+duration: 83.124794
+position: 14.467000
+</code></pre>
+
+      <h3>GET /playback-info</h3>
+
+      <p>Retrieve playback informations such as position, duration, rate,
+      buffering status and more. An XML property list is returned with the
+      following parameters:</p>
+
+      <table>
+      <colgroup>
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      </colgroup>
+
+      <thead>
+      <tr>
+       <th style="text-align:left;">key</th>
+       <th style="text-align:left;">type</th>
+       <th style="text-align:left;">description</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+       <td style="text-align:left;"><code>duration</code></td>
+       <td style="text-align:left;">real</td>
+       <td style="text-align:left;">playback duration in seconds</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>position</code></td>
+       <td style="text-align:left;">real</td>
+       <td style="text-align:left;">playback position in seconds</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>rate</code></td>
+       <td style="text-align:left;">real</td>
+       <td style="text-align:left;">playback rate</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>readyToPlay</code></td>
+       <td style="text-align:left;">boolean</td>
+       <td style="text-align:left;">ready to play</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>playbackBufferEmpty</code></td>
+       <td style="text-align:left;">boolean</td>
+       <td style="text-align:left;">buffer empty</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>playbackBufferFull</code></td>
+       <td style="text-align:left;">boolean</td>
+       <td style="text-align:left;">buffer full</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>playbackLikelyToKeepUp</code></td>
+       <td style="text-align:left;">boolean</td>
+       <td style="text-align:left;">playback likely to keep up</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>loadedTimeRanges</code></td>
+       <td style="text-align:left;">array</td>
+       <td style="text-align:left;">array of loaded time ranges</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>seekableTimeRanges</code></td>
+       <td style="text-align:left;">array</td>
+       <td style="text-align:left;">array of seekable time ranges</td>
+      </tr>
+      </tbody>
+      </table>
+      <p>Ranges are defined as dictionaries with the following keys:</p>
+
+      <table>
+      <colgroup>
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      </colgroup>
+
+      <thead>
+      <tr>
+       <th style="text-align:left;">key</th>
+       <th style="text-align:left;">type</th>
+       <th style="text-align:left;">description</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+       <td style="text-align:left;"><code>start</code></td>
+       <td style="text-align:left;">real</td>
+       <td style="text-align:left;">range start time in seconds</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>duration</code></td>
+       <td style="text-align:left;">real</td>
+       <td style="text-align:left;">range duration in seconds</td>
+      </tr>
+      </tbody>
+      </table>
+      <p><span class="ex">Example:</span> get playback info</p>
+
+      <p class="cli_srv">client → server</p>
+
+      <pre><code>GET /playback-info HTTP/1.1
+Content-Length: 0
+User-Agent: MediaControl/1.0
+X-Apple-Session-ID: 24b3fd94-1b6d-42b1-89a3-47108bfbac89
+</code></pre>
+
+      <p class="srv_cli">server → client</p>
+
+      <pre><code>HTTP/1.1 200 OK
+Date: Fri, 16 Mar 2012 15:31:42 GMT
+Content-Type: text/x-apple-plist+xml
+Content-Length: 801
+X-Transmit-Date: 2012-03-16T15:31:42.607066Z
+
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+ "http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;
+&lt;plist version="1.0"&gt;
+ &lt;dict&gt;
+  &lt;key&gt;duration&lt;/key&gt; &lt;real&gt;1801&lt;/real&gt;
+  &lt;key&gt;loadedTimeRanges&lt;/key&gt;
+  &lt;array&gt;
+   &lt;dict&gt;
+    &lt;key&gt;duration&lt;/key&gt; &lt;real&gt;51.541130402&lt;/real&gt;
+    &lt;key&gt;start&lt;/key&gt; &lt;real&gt;18.118717650000001&lt;/real&gt;
+   &lt;/dict&gt;
+  &lt;/array&gt;
+  &lt;key&gt;playbackBufferEmpty&lt;/key&gt; &lt;true/&gt;
+  &lt;key&gt;playbackBufferFull&lt;/key&gt; &lt;false/&gt;
+  &lt;key&gt;playbackLikelyToKeepUp&lt;/key&gt; &lt;true/&gt;
+  &lt;key&gt;position&lt;/key&gt; &lt;real&gt;18.043869775000001&lt;/real&gt;
+  &lt;key&gt;rate&lt;/key&gt; &lt;real&gt;1&lt;/real&gt;
+  &lt;key&gt;readyToPlay&lt;/key&gt; &lt;true/&gt;
+  &lt;key&gt;seekableTimeRanges&lt;/key&gt;
+  &lt;array&gt;
+   &lt;dict&gt;
+    &lt;key&gt;duration&lt;/key&gt;
+    &lt;real&gt;1801&lt;/real&gt;
+    &lt;key&gt;start&lt;/key&gt;
+    &lt;real&gt;0.0&lt;/real&gt;
+   &lt;/dict&gt;
+  &lt;/array&gt;
+ &lt;/dict&gt;
+&lt;/plist&gt;
+</code></pre>
+
+      <h3>PUT /setProperty</h3>
+
+      <p>Set playback property. The property name is sent as query argument. The
+      following properties are defined:</p>
+
+      <table>
+      <colgroup>
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      </colgroup>
+
+      <thead>
+      <tr>
+       <th style="text-align:left;">argument</th>
+       <th style="text-align:left;">description</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+       <td style="text-align:left;"><code>forwardEndTime</code></td>
+       <td style="text-align:left;">forward end time</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>reverseEndTime</code></td>
+       <td style="text-align:left;">reverse end time</td>
+      </tr>
+      </tbody>
+      </table>
+      <p><span class="ex">Example:</span> set forward end time</p>
+
+      <p class="cli_srv">client → server</p>
+
+      <pre><code>PUT /setProperty?forwardEndTime HTTP/1.1
+Content-Type: application/x-apple-binary-plist
+Content-Length: 96
+User-Agent: MediaControl/1.0
+X-Apple-Session-ID: 24b3fd94-1b6d-42b1-89a3-47108bfbac89
+
+&lt;BINARY PLIST DATA&gt;
+
+&lt;!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+ "http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;
+&lt;plist version="1.0"&gt;
+ &lt;dict&gt;
+  &lt;key&gt;value&lt;/key&gt;
+  &lt;dict&gt;
+   &lt;key&gt;epoch&lt;/key&gt; &lt;integer&gt;0&lt;/integer&gt;
+   &lt;key&gt;flags&lt;/key&gt; &lt;integer&gt;0&lt;/integer&gt;
+   &lt;key&gt;timescale&lt;/key&gt; &lt;integer&gt;0&lt;/integer&gt;
+   &lt;key&gt;value&lt;/key&gt; &lt;integer&gt;0&lt;/integer&gt;
+  &lt;/dict&gt;
+ &lt;/dict&gt;
+&lt;/plist&gt;
+</code></pre>
+
+      <p class="srv_cli">server → client</p>
+
+      <pre><code>HTTP/1.1 200 OK
+Date: Fri, 16 Mar 2012 15:23:11 GMT
+Content-Type: application/x-apple-binary-plist
+Content-Length: 58
+
+&lt;BINARY PLIST DATA&gt;
+
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+ "http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;
+&lt;plist version="1.0"&gt;
+ &lt;dict&gt;
+  &lt;key&gt;errorCode&lt;/key&gt;
+  &lt;integer&gt;0&lt;/integer&gt;
+ &lt;/dict&gt;
+&lt;/plist&gt;
+</code></pre>
+
+      <h3>GET /getProperty</h3>
+
+      <p>Get playback property. The property name is sent as query argument. The
+      following properties are defined:</p>
+
+      <table>
+      <colgroup>
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      </colgroup>
+
+      <thead>
+      <tr>
+       <th style="text-align:left;">argument</th>
+       <th style="text-align:left;">description</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+       <td style="text-align:left;"><code>playbackAccessLog</code></td>
+       <td style="text-align:left;">playback access log</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>playbackErrorLog</code></td>
+       <td style="text-align:left;">playback error log</td>
+      </tr>
+      </tbody>
+      </table>
+      <p><span class="ex">Example:</span> get playback access log</p>
+
+      <p class="cli_srv">client → server</p>
+
+      <pre><code>POST /getProperty?playbackAccessLog HTTP/1.1
+Content-Type: application/x-apple-binary-plist
+Content-Length: 0
+User-Agent: MediaControl/1.0
+X-Apple-Session-ID: 24b3fd94-1b6d-42b1-89a3-47108bfbac89
+</code></pre>
+
+      <p class="srv_cli">server → client</p>
+
+      <pre><code>HTTP/1.1 200 OK
+Date: Fri, 16 Mar 2012 15:31:42 GMT
+Content-Type: application/x-apple-binary-plist
+Content-Length: 530
+
+&lt;BINARY PLIST DATA&gt;
+
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+ "http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;
+&lt;plist version="1.0"&gt;
+ &lt;dict&gt;
+  &lt;key&gt;errorCode&lt;/key&gt;
+  &lt;integer&gt;0&lt;/integer&gt;
+  &lt;key&gt;value&lt;/key&gt;
+  &lt;array&gt;
+   &lt;dict&gt;
+    &lt;key&gt;bytes&lt;/key&gt; &lt;integer&gt;1818336&lt;/integer&gt;
+    &lt;key&gt;c-duration-downloaded&lt;/key&gt; &lt;real&gt;70&lt;/real&gt;
+    &lt;key&gt;c-duration-watched&lt;/key&gt; &lt;real&gt;18.154102027416229&lt;/real&gt;
+    &lt;key&gt;c-frames-dropped&lt;/key&gt; &lt;integer&gt;0&lt;/integer&gt;
+    &lt;key&gt;c-observed-bitrate&lt;/key&gt; &lt;real&gt;14598047.302367469&lt;/real&gt;
+    &lt;key&gt;c-overdue&lt;/key&gt; &lt;integer&gt;0&lt;/integer&gt;
+    &lt;key&gt;c-stalls&lt;/key&gt; &lt;integer&gt;0&lt;/integer&gt;
+    &lt;key&gt;c-start-time&lt;/key&gt; &lt;real&gt;0.0&lt;/real&gt;
+    &lt;key&gt;c-startup-time&lt;/key&gt; &lt;real&gt;0.27732497453689575&lt;/real&gt;
+    &lt;key&gt;cs-guid&lt;/key&gt; &lt;string&gt;B475F105-78FD-4200-96BC-148BAB6DAC11&lt;/string&gt;
+    &lt;key&gt;date&lt;/key&gt; &lt;date&gt;2012-03-16T15:31:24Z&lt;/date&gt;
+    &lt;key&gt;s-ip&lt;/key&gt; &lt;string&gt;213.152.6.89&lt;/string&gt;
+    &lt;key&gt;s-ip-changes&lt;/key&gt; &lt;integer&gt;0&lt;/integer&gt;
+    &lt;key&gt;sc-count&lt;/key&gt; &lt;integer&gt;7&lt;/integer&gt;
+    &lt;key&gt;uri&lt;/key&gt; &lt;string&gt;http://devimages.apple.com/iphone/samples/bipbop/gear1/prog_index.m3u8&lt;/string&gt;
+   &lt;/dict&gt;
+  &lt;/array&gt;
+ &lt;/dict&gt;
+&lt;/plist&gt;
+</code></pre>
+
+      <h2 id="video-events">4.2. Events</h2>
+      <p>This event is used to send the playback state to the client:</p>
+
+      <table>
+      <colgroup>
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      </colgroup>
+
+      <thead>
+      <tr>
+       <th style="text-align:left;">key</th>
+       <th style="text-align:left;">type</th>
+       <th style="text-align:left;">description</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+       <td style="text-align:left;">category</td>
+       <td style="text-align:left;">string</td>
+       <td style="text-align:left;"><code>video</code></td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">sessionID</td>
+       <td style="text-align:left;">integer</td>
+       <td style="text-align:left;">session id</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">state</td>
+       <td style="text-align:left;">string</td>
+       <td style="text-align:left;"><code>loading</code>, <code>playing</code>, <code>paused</code> or <code>stopped</code></td>
+      </tr>
+      </tbody>
+      </table>
+      <p><span class="ex">Example:</span> notify the client that video playback is paused</p>
+
+      <p class="srv_cli">server → client</p>
+
+      <pre><code>POST /event HTTP/1.1
+Content-Type: application/x-apple-plist
+Content-Length: 321
+X-Apple-Session-ID: 00000000-0000-0000-0000-000000000000
+
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;
+&lt;plist version="1.0"&gt;
+ &lt;dict&gt;
+  &lt;key&gt;category&lt;/key&gt;
+  &lt;string&gt;video&lt;/string&gt;
+  &lt;key&gt;sessionID&lt;/key&gt;
+  &lt;integer&gt;13&lt;/integer&gt;
+  &lt;key&gt;state&lt;/key&gt;
+  &lt;string&gt;paused&lt;/string&gt;
+ &lt;/dict&gt;
+&lt;/plist&gt;
+</code></pre>
+
+      <p class="cli_srv">client → server</p>
+
+      <pre><code>HTTP/1.1 200 OK
+Content-Length: 0
+Date: Mon, 08 Mar 2012 18:07:43 GMT
+</code></pre>
+
+      <h1 id="audio">5. Audio</h1>
+      <p>Audio streaming is supported using the <em>RTSP</em> protocol (<a href="http://www.ietf.org/rfc/rfc2326.txt">RFC 2326</a>).</p>
+
+      <h2 id="audio-rtsprequests">5.1. RTSP requests</h2>
+      <h3>OPTIONS</h3>
+
+      <p>The <code>OPTIONS</code> request asks the RTSP server for its supported methods.
+      Apple TV supports the following methods: <code>ANNOUNCE</code>, <code>SETUP</code>, <code>RECORD</code>,
+      <code>PAUSE</code>, <code>FLUSH</code>, <code>TEARDOWN</code>, <code>OPTIONS</code>, <code>GET_PARAMETER</code>, <code>SET_PARAMETER</code>,
+      <code>POST</code> and <code>GET</code>.</p>
+
+      <p class="cli_srv">client → server</p>
+
+      <pre><code>OPTIONS * RTSP/1.0
+CSeq: 3
+User-Agent: iTunes/10.6 (Macintosh; Intel Mac OS X 10.7.3) AppleWebKit/535.18.5
+Client-Instance: 56B29BB6CB904862
+DACP-ID: 56B29BB6CB904862
+Active-Remote: 1986535575
+</code></pre>
+
+      <p class="srv_cli">server → client</p>
+
+      <pre><code>RTSP/1.0 200 OK
+Public: ANNOUNCE, SETUP, RECORD, PAUSE, FLUSH, TEARDOWN, OPTIONS,
+GET_PARAMETER, SET_PARAMETER, POST, GET
+Server: AirTunes/130.14
+CSeq: 3
+</code></pre>
+
+      <h3>ANNOUNCE</h3>
+
+      <p>The <code>ANNOUNCE</code> request tells the RTSP server about stream properties using
+      SDP (<a href="http://www.ietf.org/rfc/rfc4566.txt">RFC 4566</a>). Codec informations and encryption keys are of particular
+      interest.</p>
+
+      <p><span class="ex">Example 1:</span> <code>ANNOUNCE</code> for <em>Apple Lossless</em> audio from iTunes</p>
+
+      <p class="cli_srv">client → server</p>
+
+      <pre><code>ANNOUNCE rtsp://fe80::217:f2ff:fe0f:e0f6/3413821438 RTSP/1.0
+CSeq: 3
+Content-Type: application/sdp
+Content-Length: 348
+User-Agent: iTunes/10.6 (Macintosh; Intel Mac OS X 10.7.3) AppleWebKit/535.18.5
+Client-Instance: 56B29BB6CB904862
+DACP-ID: 56B29BB6CB904862
+Active-Remote: 1986535575
+
+v=0
+o=iTunes 3413821438 0 IN IP4 fe80::217:f2ff:fe0f:e0f6
+s=iTunes
+c=IN IP4 fe80::5a55:caff:fe1a:e187
+t=0 0
+m=audio 0 RTP/AVP 96
+a=rtpmap:96 AppleLossless
+a=fmtp:96 352 0 16 40 10 14 2 255 0 0 44100
+a=fpaeskey:RlBMWQECAQAAAAA8AAAAAPFOnNe+zWb5/n4L5KZkE2AAAAAQlDx69reTdwHF9LaNmhiRURTAbcL4brYAceAkZ49YirXm62N4
+a=aesiv:5b+YZi9Ikb845BmNhaVo+Q
+</code></pre>
+
+      <p class="srv_cli">server → client</p>
+
+      <pre><code>RTSP/1.0 200 OK
+Server: AirTunes/130.14
+CSeq: 3
+</code></pre>
+
+      <p><span class="ex">Example 2:</span> <code>ANNOUNCE</code> for <em>AAC</em> audio from an iOS device</p>
+
+      <p class="cli_srv">client → server</p>
+
+      <pre><code>ANNOUNCE rtsp://192.168.1.45/2699324803567405959 RTSP/1.0
+X-Apple-Device-ID: 0xa4d1d2800b68
+CSeq: 16
+DACP-ID: 14413BE4996FEA4D
+Active-Remote: 2543110914
+Content-Type: application/sdp
+Content-Length: 331
+
+v=0
+o=AirTunes 2699324803567405959 0 IN IP4 192.168.1.5
+s=AirTunes
+c=IN IP4 192.168.1.5
+t=0 0
+m=audio 0 RTP/AVP 96
+a=rtpmap:96 mpeg4-generic/44100/2
+a=fmtp:96
+a=fpaeskey:RlBMWQECAQAAAAA8AAAAAOG6c4aMdLkXAX+lbjp7EhgAAAAQeX5uqGyYkBmJX+gd5ANEr+amI8urqFmvcNo87pR0BXGJ4eLf
+a=aesiv:VZTaHn4wSJ84Jjzlb94m0Q==
+a=min-latency:11025
+</code></pre>
+
+      <p class="srv_cli">server → client</p>
+
+      <pre><code>RTSP/1.0 200 OK
+Server: AirTunes/130.14
+CSeq: 16
+</code></pre>
+
+      <p><span class="ex">Example 3:</span> <code>ANNOUNCE</code> for <em>AAC-ELD</em> audio and <em>H.264</em> video from an iOS device</p>
+
+      <p class="cli_srv">client → server</p>
+
+      <pre><code>ANNOUNCE rtsp://192.168.1.45/846700446248110360 RTSP/1.0
+X-Apple-Device-ID: 0xa4d1d2800b68
+CSeq: 27
+DACP-ID: 14413BE4996FEA4D
+Active-Remote: 2543110914
+Content-Type: application/sdp
+Content-Length: 415
+
+v=0
+o=AirTunes 846700446248110360 0 IN IP4 192.168.1.5
+s=AirTunes
+c=IN IP4 192.168.1.5
+t=0 0
+m=audio 0 RTP/AVP 96
+a=rtpmap:96 mpeg4-generic/44100/2
+a=fmtp:96 mode=AAC-eld; constantDuration=480
+a=fpaeskey:RlBMWQECAQAAAAA8AAAAAKKp+t27A+686xfviEphhw8AAAAQE/3LSqv9MHgnEKxkbKh1buE9+ylKg0YuqcyAC7fT0EqJNtdq
+a=aesiv:i/a3nUKYNDSIPP2fC+UKGQ==
+a=min-latency:4410
+m=video 0 RTP/AVP 97
+a=rtpmap:97 H264
+a=fmtp:97
+</code></pre>
+
+      <p class="srv_cli">server → client</p>
+
+      <pre><code>RTSP/1.0 200 OK
+Server: AirTunes/130.14
+CSeq: 27
+</code></pre>
+
+      <h3>SETUP</h3>
+
+      <p>The <code>SETUP</code> request initializes a record session. It sends all the
+      necessary transport informations. Three UDP channels are setup:</p>
+
+      <table>
+      <colgroup>
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      </colgroup>
+
+      <thead>
+      <tr>
+       <th style="text-align:left;">channel</th>
+       <th style="text-align:left;">description</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+       <td style="text-align:left;">server</td>
+       <td style="text-align:left;">audio data</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">control</td>
+       <td style="text-align:left;">sync and retransmit requests</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">timing</td>
+       <td style="text-align:left;">master clock sync</td>
+      </tr>
+      </tbody>
+      </table>
+      <p><span class="ex">Example:</span> setup a record session</p>
+
+      <p class="cli_srv">client → server</p>
+
+      <pre><code>SETUP rtsp://fe80::217:f2ff:fe0f:e0f6/3413821438 RTSP/1.0
+CSeq: 4
+Transport: RTP/AVP/UDP;unicast;interleaved=0-1;mode=record;control_port=6001;timing_port=6002
+User-Agent: iTunes/10.6 (Macintosh; Intel Mac OS X 10.7.3) AppleWebKit/535.18.5
+Client-Instance: 56B29BB6CB904862
+DACP-ID: 56B29BB6CB904862
+Active-Remote: 1986535575
+</code></pre>
+
+      <p class="srv_cli">server → client</p>
+
+      <pre><code>RTSP/1.0 200 OK
+Transport: RTP/AVP/UDP;unicast;mode=record;server_port=53561;control_port=63379;timing_port=50607
+Session: 1
+Audio-Jack-Status: connected
+Server: AirTunes/130.14
+CSeq: 4
+</code></pre>
+
+      <h3>RECORD</h3>
+
+      <p>The <code>RECORD</code> request starts the audio streaming. The <code>RTP-Info</code> header
+      contains the following parameters:</p>
+
+      <table>
+      <colgroup>
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      </colgroup>
+
+      <thead>
+      <tr>
+       <th style="text-align:left;">name</th>
+       <th style="text-align:left;">size</th>
+       <th style="text-align:left;">description</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+       <td style="text-align:left;"><code>seq</code></td>
+       <td style="text-align:left;">16-bit</td>
+       <td style="text-align:left;">initial RTP sequence number</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>rtptime</code></td>
+       <td style="text-align:left;">32-bit</td>
+       <td style="text-align:left;">initial RTP timestamp</td>
+      </tr>
+      </tbody>
+      </table>
+      <p><span class="ex">Example:</span> start audio stream</p>
+
+      <p class="cli_srv">client → server</p>
+
+      <pre><code>RECORD rtsp://fe80::217:f2ff:fe0f:e0f6/3413821438 RTSP/1.0
+CSeq: 5
+Session: 1
+Range: npt=0-
+RTP-Info: seq=20857;rtptime=1146549156
+User-Agent: iTunes/10.6 (Macintosh; Intel Mac OS X 10.7.3) AppleWebKit/535.18.5
+Client-Instance: 56B29BB6CB904862
+DACP-ID: 56B29BB6CB904862
+Active-Remote: 1986535575
+</code></pre>
+
+      <p class="srv_cli">server → client</p>
+
+      <pre><code>RTSP/1.0 200 OK
+Audio-Latency: 2205
+Server: AirTunes/130.14
+CSeq: 5
+</code></pre>
+
+      <h3>FLUSH</h3>
+
+      <p>The <code>FLUSH</code> request stops the streaming.</p>
+
+      <p><span class="ex">Example:</span> pause the audio stream</p>
+
+      <p class="cli_srv">client → server</p>
+
+      <pre><code>FLUSH rtsp://fe80::217:f2ff:fe0f:e0f6/3413821438 RTSP/1.0
+CSeq: 31
+Session: 1
+RTP-Info: seq=25009;rtptime=1148010660
+User-Agent: iTunes/10.6 (Macintosh; Intel Mac OS X 10.7.3) AppleWebKit/535.18.5
+Client-Instance: 56B29BB6CB904862
+DACP-ID: 56B29BB6CB904862
+Active-Remote: 1986535575
+</code></pre>
+
+      <p class="srv_cli">server → client</p>
+
+      <pre><code>RTSP/1.0 200 OK
+RTP-Info: rtptime=1147914212
+Server: AirTunes/130.14
+CSeq: 31
+</code></pre>
+
+      <h3>TEARDOWN</h3>
+
+      <p>The <code>TEARDOWN</code> request ends the RTSP session.</p>
+
+      <p><span class="ex">Example:</span> close session 1</p>
+
+      <p class="cli_srv">client → server</p>
+
+      <pre><code>TEARDOWN rtsp://fe80::217:f2ff:fe0f:e0f6/3413821438 RTSP/1.0
+CSeq: 32
+Session: 1
+User-Agent: iTunes/10.6 (Macintosh; Intel Mac OS X 10.7.3) AppleWebKit/535.18.5
+Client-Instance: 56B29BB6CB904862
+DACP-ID: 56B29BB6CB904862
+Active-Remote: 1986535575
+</code></pre>
+
+      <p class="srv_cli">server → client</p>
+
+      <pre><code>RTSP/1.0 200 OK
+Server: AirTunes/130.14
+CSeq: 32
+</code></pre>
+
+      <h2 id="audio-rtpstreams">5.2. RTP Streams</h2>
+      <p>Audio packets are fully RTP compliant. Control and timing packets,
+      however, do not seem to be fully compliant with the RTP standard.</p>
+
+      <p>The following payload types are defined:</p>
+
+      <table>
+      <colgroup>
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      </colgroup>
+
+      <thead>
+      <tr>
+       <th style="text-align:left;">payload type</th>
+       <th style="text-align:left;">port</th>
+       <th style="text-align:left;">description</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+       <td style="text-align:left;">82</td>
+       <td style="text-align:left;"><code>timing_port</code></td>
+       <td style="text-align:left;">timing request</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">83</td>
+       <td style="text-align:left;"><code>timing_port</code></td>
+       <td style="text-align:left;">timing reply</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">84</td>
+       <td style="text-align:left;"><code>control_port</code></td>
+       <td style="text-align:left;">time sync</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">85</td>
+       <td style="text-align:left;"><code>control_port</code></td>
+       <td style="text-align:left;">retransmit request</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">86</td>
+       <td style="text-align:left;"><code>control_port</code></td>
+       <td style="text-align:left;">retransmit reply</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">96</td>
+       <td style="text-align:left;"><code>server_port</code></td>
+       <td style="text-align:left;">audio data</td>
+      </tr>
+      </tbody>
+      </table>
+      <h3>Audio packets</h3>
+
+      <p>Audio data is sent using the <code>DynamicRTP-Type-96</code> payload type. The
+      <code>Marker</code> bit is set on the first packet sent after <code>RECORD</code> or <code>FLUSH</code>
+      requests. The RTP payload contains optionally encrypted audio data.</p>
+
+      <p><span class="ex">Example:</span> encrypted audio packet</p>
+
+      <p class="cli_srv">client → server</p>
+
+      <pre><code>0000   80 e0 b1 91 f7 79 16 c2 e8 bb 6b 2c bb 5c 8e 51
+0010   aa 7c d2 96 00 c3 fd 60 eb ae 6e 41 31 38 fe ae
+....
+03e0   cb 1c 73 bf e7 05 93 30 fa 85 7f 32 77 8d a8 97
+03f0   a0 c7 c8 78 7b e5 81 a1 4f b4 3e a3 43 db 7c
+
+Real-Time Transport Protocol
+    10.. .... = Version: RFC 1889 Version (2)
+    ..0. .... = Padding: False
+    ...0 .... = Extension: False
+    .... 0000 = Contributing source identifiers count: 0
+    1... .... = Marker: True
+    Payload type: DynamicRTP-Type-96 (96)
+    Sequence number: 45457
+    Timestamp: 4151908034
+    Synchronization Source identifier: 0xe8bb6b2c (3904596780)
+    Payload: bb5c8e51aa7cd29600c3fd60ebae6e413138feae909b44f1...
+</code></pre>
+
+      <h3>Sync packets</h3>
+
+      <p>Sync packets are sent once per second to the control port. They are used to
+      correlate the RTP timestamps currently used in the audio stream to the NTP time
+      used for clock synchronization. Payload type is 84, the <code>Marker</code> bit is always
+      set and the <code>Extension</code> bit is set on the first packet after <code>RECORD</code> or
+      <code>FLUSH</code> requests. The <code>SSRC</code> field is not included in the RTP header.</p>
+
+      <table>
+      <colgroup>
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      </colgroup>
+
+      <thead>
+      <tr>
+       <th style="text-align:left;">bytes</th>
+       <th style="text-align:left;">description</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+       <td style="text-align:left;">8</td>
+       <td style="text-align:left;">RTP header without <code>SSRC</code></td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">8</td>
+       <td style="text-align:left;">current NTP time</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">4</td>
+       <td style="text-align:left;">RTP timestamp for the next audio packet</td>
+      </tr>
+      </tbody>
+      </table>
+      <p><span class="ex">Example:</span> sync packet</p>
+
+      <p class="cli_srv">client → server</p>
+
+      <pre><code>0000   80 d4 00 04 c7 cd 11 a8 83 ab 1c 49 2f e4 22 e2
+0010   c7 ce 3f 1f
+
+Real-Time Transport Protocol
+    10.. .... = Version: RFC 1889 Version (2)
+    ..0. .... = Padding: False
+    ...0 .... = Extension: False
+    .... 0000 = Contributing source identifiers count: 0
+    1... .... = Marker: True
+    Payload type: Unassigned (84)
+    Sequence number: 4
+    Timestamp: 3352105384
+    Synchronization Source identifier: 0x83ab1c49 (2209029193)
+    Payload: 2fe422e2c7ce3f1f
+</code></pre>
+
+      <h3>Retransmit packets</h3>
+
+      <p>AirTunes supports resending audio packets which have been lost. Payload
+      type is 85 for retransmit queries, the <code>Marker</code> bit is always set and the
+      <code>SSRC</code> field is not included in the RTP header.</p>
+
+      <table>
+      <colgroup>
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      </colgroup>
+
+      <thead>
+      <tr>
+       <th style="text-align:left;">bytes</th>
+       <th style="text-align:left;">description</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+       <td style="text-align:left;">8</td>
+       <td style="text-align:left;">RTP header without <code>SSRC</code></td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">2</td>
+       <td style="text-align:left;">sequence number for the first lost packet</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">2</td>
+       <td style="text-align:left;">number of lost packets</td>
+      </tr>
+      </tbody>
+      </table>
+      <p>Retransmit replies have payload type 86, with a full audio RTP packet
+      after the sequence number.</p>
+
+      <h3>Timing packets</h3>
+
+      <p>Timing packets are used to synchronize a master clock for audio. This is
+      useful for clock recovery and precise synchronization of several devices
+      playing the same audio stream.</p>
+
+      <p>Timing packets are sent at 3 second intervals. They always have the
+      <code>Marker</code> bit set, and payload type 82 for queries and 83 for replies.
+      The <code>SSRC</code> field is not included in the RTP header, so it takes only 8
+      bytes, followed by three <em>NTP</em> timestamps:</p>
+
+      <table>
+      <colgroup>
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      </colgroup>
+
+      <thead>
+      <tr>
+       <th style="text-align:left;">bytes</th>
+       <th style="text-align:left;">description</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+       <td style="text-align:left;">8</td>
+       <td style="text-align:left;">RTP header without <code>SSRC</code></td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">8</td>
+       <td style="text-align:left;">origin timestamp</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">8</td>
+       <td style="text-align:left;">receive timestamp</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">8</td>
+       <td style="text-align:left;">transmit timestamp</td>
+      </tr>
+      </tbody>
+      </table>
+      <p><span class="ex">Example:</span> timing query/reply</p>
+
+      <p class="srv_cli">server → client</p>
+
+      <pre><code>0000   80 d2 00 07 00 00 00 00 00 00 00 00 00 00 00 00
+0010   00 00 00 00 00 00 00 00 83 c1 17 cc af ba 9b 32
+
+Real-Time Transport Protocol
+    10.. .... = Version: RFC 1889 Version (2)
+    ..0. .... = Padding: False
+    ...0 .... = Extension: False
+    .... 0000 = Contributing source identifiers count: 0
+    1... .... = Marker: True
+    Payload type: Unassigned (82)
+    Sequence number: 7
+    Timestamp: 0
+    Synchronization Source identifier: 0x00000000 (0)
+    Payload: 00000000000000000000000083c117ccafba9b32
+</code></pre>
+
+      <p class="cli_srv">client → server</p>
+
+      <pre><code>0000   80 d3 00 07 00 00 00 00 83 c1 17 cc af ba 9b 32
+0010   83 c1 17 cc b0 12 ce b6 83 c1 17 cc b0 14 10 47
+
+Real-Time Transport Protocol
+    10.. .... = Version: RFC 1889 Version (2)
+    ..0. .... = Padding: False
+    ...0 .... = Extension: False
+    .... 0000 = Contributing source identifiers count: 0
+    1... .... = Marker: True
+    Payload type: Unassigned (83)
+    Sequence number: 7
+    Timestamp: 0
+    Synchronization Source identifier: 0x83c117cc (2210469836)
+    Payload: afba9b3283c117ccb012ceb683c117ccb0141047
+</code></pre>
+
+      <h2 id="audio-volumecontrol">5.3. Volume Control</h2>
+      <p>Audio volume can be changed using a <code>SET_PARAMETER</code> request. The volume
+      is a float value representing the audio attenuation in dB. A value of
+      –144 means the audio is muted. Then it goes from –30 to 0.</p>
+
+      <p><span class="ex">Example:</span> set audio volume</p>
+
+      <p class="cli_srv">client → server</p>
+
+      <pre><code>SET_PARAMETER rtsp://fe80::217:f2ff:fe0f:e0f6/3413821438 RTSP/1.0
+CSeq: 6
+Session: 1
+Content-Type: text/parameters
+Content-Length: 20
+User-Agent: iTunes/10.6 (Macintosh; Intel Mac OS X 10.7.3) AppleWebKit/535.18.5
+Client-Instance: 56B29BB6CB904862
+DACP-ID: 56B29BB6CB904862
+Active-Remote: 1986535575
+
+volume: -11.123877
+</code></pre>
+
+      <p class="srv_cli">server → client</p>
+
+      <pre><code>RTSP/1.0 200 OK
+Server: AirTunes/130.14
+CSeq: 6
+</code></pre>
+
+      <h2 id="audio-metadata">5.4. Metadata</h2>
+      <p>Metadata for the current track are sent using <code>SET_PARAMETER</code> requests.
+      This allows the Apple TV to show the track name, artist, album, cover
+      artwork and timeline. The <code>RTP-Info</code> header contains a <code>rtptime</code> parameter
+      with the RTP timestamp corresponding to the time from which the metadata
+      is valid.</p>
+
+      <h3>Track Informations</h3>
+
+      <p>Informations about the current track are sent in the <em>DAAP</em> (<a href="http://tapjam.net/daap/">Digital
+      Audio Access Protocol</a>) format, with <code>application/x-dmap-tagged</code> content
+      type.</p>
+
+      <p>The following DAAP attributes are displayed on Apple TV:</p>
+
+      <table>
+      <colgroup>
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      </colgroup>
+
+      <thead>
+      <tr>
+       <th style="text-align:left;">attribute</th>
+       <th style="text-align:left;">description</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+       <td style="text-align:left;"><code>dmap.itemname</code></td>
+       <td style="text-align:left;">track name</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>daap.songartist</code></td>
+       <td style="text-align:left;">artist</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>daap.songalbum</code></td>
+       <td style="text-align:left;">album</td>
+      </tr>
+      </tbody>
+      </table>
+      <p><span class="ex">Example:</span> send track informations</p>
+
+      <p class="cli_srv">client → server</p>
+
+      <pre><code>SET_PARAMETER rtsp://fe80::217:f2ff:fe0f:e0f6/3413821438 RTSP/1.0
+CSeq: 8
+Session: 1
+Content-Type: application/x-dmap-tagged
+Content-Length: 3242
+RTP-Info: rtptime=1146549156
+User-Agent: iTunes/10.6 (Macintosh; Intel Mac OS X 10.7.3) AppleWebKit/535.18.5
+Client-Instance: 56B29BB6CB904862
+DACP-ID: 56B29BB6CB904862
+Active-Remote: 1986535575
+
+&lt;DMAP DATA&gt;
+</code></pre>
+
+      <p class="srv_cli">server → client</p>
+
+      <pre><code>RTSP/1.0 200 OK
+Server: AirTunes/130.14
+CSeq: 8
+</code></pre>
+
+      <h3>Cover Artwork</h3>
+
+      <p>Artworks are sent as <em>JPEG</em> pictures, with <code>image/jpeg</code> content type.</p>
+
+      <p><span class="ex">Example:</span> send cover artwork</p>
+
+      <p class="cli_srv">client → server</p>
+
+      <pre><code>SET_PARAMETER rtsp://fe80::217:f2ff:fe0f:e0f6/3413821438 RTSP/1.0
+CSeq: 9
+Session: 1
+Content-Type: image/jpeg
+Content-Length: 34616
+RTP-Info: rtptime=1146549156
+User-Agent: iTunes/10.6 (Macintosh; Intel Mac OS X 10.7.3) AppleWebKit/535.18.5
+Client-Instance: 56B29BB6CB904862
+DACP-ID: 56B29BB6CB904862
+Active-Remote: 1986535575
+
+&lt;JPEG DATA&gt;
+</code></pre>
+
+      <p class="srv_cli">server → client</p>
+
+      <pre><code>RTSP/1.0 200 OK
+Server: AirTunes/130.14
+CSeq: 9
+</code></pre>
+
+      <h3>Playback Progress</h3>
+
+      <p>Playback progress is sent as <code>text/parameters</code>, with a <code>progress</code>
+      parameter representing three absolute RTP timestamps values:
+      <code>start</code>/<code>curr</code>/<code>end</code>.</p>
+
+      <table>
+      <colgroup>
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      </colgroup>
+
+      <thead>
+      <tr>
+       <th style="text-align:left;">timestamp</th>
+       <th style="text-align:left;">description</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+       <td style="text-align:left;"><code>start</code></td>
+       <td style="text-align:left;">beginning of the current track</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>curr</code></td>
+       <td style="text-align:left;">current playback position</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>end</code></td>
+       <td style="text-align:left;">end of the current track</td>
+      </tr>
+      </tbody>
+      </table>
+      <p>The relative position and track duration can be computed as follows:</p>
+
+      <ul>
+      <li><code>position = rtptime_to_sec(curr - start)</code></li>
+      <li><code>duration = rtptime_to_sec(end - start)</code></li>
+      </ul>
+
+      <p><span class="ex">Example:</span> send playback progress</p>
+
+      <p class="cli_srv">client → server</p>
+
+      <pre><code>SET_PARAMETER rtsp://fe80::217:f2ff:fe0f:e0f6/3413821438 RTSP/1.0
+CSeq: 10
+Session: 1
+Content-Type: text/parameters
+Content-Length: 44
+User-Agent: iTunes/10.6 (Macintosh; Intel Mac OS X 10.7.3)
+AppleWebKit/535.18.5
+Client-Instance: 56B29BB6CB904862
+DACP-ID: 56B29BB6CB904862
+Active-Remote: 1986535575
+
+progress: 1146221540/1146549156/1195701740
+</code></pre>
+
+      <p class="srv_cli">server → client</p>
+
+      <pre><code>RTSP/1.0 200 OK
+Server: AirTunes/130.14
+CSeq: 10
+</code></pre>
+
+      <h2 id="audio-airportexpressauthentication">5.5. AirPort Express Authentication</h2>
+      <p>Sending audio data to the AirPort Express requires a <em>RSA</em> based
+      authentication. All binary data are encoded using <em>Base64</em> (<a href="http://www.ietf.org/rfc/rfc4648.txt">RFC 4648</a>)
+      without padding.</p>
+
+      <h3>Client side</h3>
+
+      <ul>
+      <li><p>In the <code>ANNOUNCE</code> request, the client sends a 128-bit random number in
+       the <code>Apple-Challenge</code> header.</p></li>
+      <li><p>A 128-bit <em>AES</em> key is generated, encrypted with the RSA public key
+       using the <em>OAEP</em> encryption scheme, and sent along with an
+       initialization vector in the <code>rsaaeskey</code> and <code>aesiv</code> SDP attributes.</p></li>
+      </ul>
+
+      <h3>Server side</h3>
+
+      <ul>
+      <li><p>The AirPort Express decrypts the AES key with its RSA private key, it
+       will be used to decrypt the audio payload.</p></li>
+      <li><p>The AirPort Express signs the <code>Apple-Challenge</code> number with its RSA
+       private key using the <em>PKCS#1</em> signature scheme and send the result in
+       the <code>Apple-Response</code> header.</p></li>
+      </ul>
+
+      <h3>Client side</h3>
+
+      <ul>
+      <li>The client decrypts the <code>Apple-Response</code> value with the RSA public key,
+       and checks that it is the same random number it has previously
+       generated.</li>
+      </ul>
+
+      <p><span class="ex">Example:</span> AirPort Express challenge/response</p>
+
+      <p class="cli_srv">client → server</p>
+
+      <pre><code>ANNOUNCE rtsp://10.0.1.101/3172942895 RTSP/1.0
+CSeq: 1
+Content-Type: application/sdp
+Content-Length: 567
+User-Agent: iTunes/4.6 (Windows; N)
+Client-Instance: 9FF35780A8BC8D2B
+Apple-Challenge: 09KF45soMYmvj6dpsUGiIg
+
+v=0
+o=iTunes 3172942895 0 IN IP4 10.0.1.101
+s=iTunes
+c=IN IP4 10.0.1.103
+t=0 0
+m=audio 0 RTP/AVP 96
+a=rtpmap:96 AppleLossless
+a=fmtp:96 4096 0 16 40 10 14 2 255 0 0 44100
+a=rsaaeskey:5QYIqmdZGTONY5SHjEJrqAhaa0W9wzDC5i6q221mdGZJ5ubO6Kg
+            yhC6U83wpY87TFdPRdfPQl2kVC7+Uefmx1bXdIUo07ZcJsqMbgtje4w2JQw0b
+            Uw2BlzNPmVGQOxfdpGc3LXZzNE0jI1D4conUEiW6rrzikXBhk7Y/i2naw13ayy
+            xaSwtkiJ0ltBQGYGErbV2tx43QSNj7O0JIG9GrF2GZZ6/UHo4VH+ZXgQ4NZvP/
+            QXPCsLutZsvusFDzIEq7TN1fveINOiwrzlN+bckEixvhXlvoQTWE2tjbmQYhMvO
+            FIly5gNbZiXi0l5AdolX4jDC2vndFHqWDks/3sPikNg
+a=aesiv:zcZmAZtqh7uGcEwPXk0QeA
+</code></pre>
+
+      <p class="srv_cli">server → client</p>
+
+      <pre><code>RTSP/1.0 200 OK
+CSeq: 1
+Apple-Response: u+msU8Cc7KBrVPjI/Ir8fOL8+C5D3Jsw1+acaW3MNTndrTQAeb/a
+                5m10UVBX6wb/DYQGY+b28ksSwBjN0nFOk4Y2cODEf83FAh7B
+                mkLpmpkpplp7zVXQ+Z9DcB6gC60ZsS3t98aoR7tSzVLKZNgi2X2sC+vGsz
+                utQxX03HK008VjcdngHv3g1p2knoETd07T6eVfZCmPqp6Ga7Dj8VIIj/GEP3
+                AjjDx3lJnQBXUDmxM484YXLXZjWFXCiY8GJt6whjf7/2c3rIoT3Z7PQpEvPmM
+                1MXU9cv4NL59Y/q0OAVQ38foOz7eGAhfvjOsCnHU25aik7/7ToIYt1tyVtap/kA
+Audio-Jack-Status: connected; type=analog
+</code></pre>
+
+      <h2 id="audio-remotecontrol">5.6. Remote Control</h2>
+      <p>Audio speakers can send commands to the AirPlay client to change the
+      current track, pause and resume playback, shuffle the playlist, and
+      more. This uses a subset of <em>DACP</em> (<a href="http://en.wikipedia.org/wiki/Digital_Audio_Control_Protocol">Digital Audio Control Protocol</a>).
+      An AirPlay client advertises this capability by including a <code>DACP-ID</code>
+      header in its RTSP requests, with a 64-bit ID for the DACP server. An
+      <code>Active-Remote</code> header is included as well, serving as an authentication
+      token.</p>
+
+      <p>The AirPlay server needs to browse the mDNS <code>_dacp._tcp</code> services for a
+      matching DACP server. Server names look like <code>iTunes_Ctrl_$ID</code>.</p>
+
+      <p class="caption">DACP service from iTunes</p>
+
+      <pre><code>name: iTunes_Ctrl_56B29BB6CB904862
+type: _dacp._tcp
+port: 3689
+txt:
+ txtvers=1
+ Ver=131075
+ DbId=63B5E5C0C201542E
+ OSsi=0x1F5
+</code></pre>
+
+      <p>Once the DACP server has been identified, HTTP requests can be sent to the
+      corresponding service port. The <code>Active-Remote</code> header must be included in
+      these requests, so no additional pairing is required. The location for
+      remote control commands is <code>/ctrl-int/1/$CMD</code>. The following commands are
+      available:</p>
+
+      <table>
+      <colgroup>
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      </colgroup>
+
+      <thead>
+      <tr>
+       <th style="text-align:left;">command</th>
+       <th style="text-align:left;">description</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+       <td style="text-align:left;"><code>beginff</code></td>
+       <td style="text-align:left;">begin fast forward</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>beginrew</code></td>
+       <td style="text-align:left;">begin rewind</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>mutetoggle</code></td>
+       <td style="text-align:left;">toggle mute status</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>nextitem</code></td>
+       <td style="text-align:left;">play next item in playlist</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>previtem</code></td>
+       <td style="text-align:left;">play previous item in playlist</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>pause</code></td>
+       <td style="text-align:left;">pause playback</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>playpause</code></td>
+       <td style="text-align:left;">toggle between play and pause</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>play</code></td>
+       <td style="text-align:left;">start playback</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>stop</code></td>
+       <td style="text-align:left;">stop playback</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>playresume</code></td>
+       <td style="text-align:left;">play after fast forward or rewind</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>shuffle_songs</code></td>
+       <td style="text-align:left;">shuffle playlist</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>volumedown</code></td>
+       <td style="text-align:left;">turn audio volume down</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>volumeup</code></td>
+       <td style="text-align:left;">turn audio volume up</td>
+      </tr>
+      </tbody>
+      </table>
+      <p><span class="ex">Example:</span> send a pause command</p>
+
+      <p class="srv_cli">server → client</p>
+
+      <pre><code>GET /ctrl-int/1/pause HTTP/1.1
+Host: starlight.local.
+Active-Remote: 1986535575
+</code></pre>
+
+      <p class="cli_srv">client → server</p>
+
+      <pre><code>HTTP/1.1 204 No Content
+Date: Tue, 06 Mar 2012 16:38:51 GMT
+DAAP-Server: iTunes/10.6 (Mac OS X)
+Content-Type: application/x-dmap-tagged
+Content-Length: 0
+</code></pre>
+
+      <h1 id="screenmirroring">6. Screen Mirroring</h1>
+      <p>Screen mirroring is achieved by transmitting an <em>H.264</em> encoded video
+      stream over a TCP connection. This stream is packetized with a 128-byte
+      header. <em>AAC-ELD</em> audio is sent using the AirTunes protocol. As for the
+      master clock, it is synchronized using <em>NTP</em>.</p>
+
+      <p>Moreover, as soon as a client starts a video playback, a standard
+      AirPlay connection is made to send the video URL, and mirroring is
+      stopped. This avoids decoding and re-encoding the video, which would
+      incur a quality loss.</p>
+
+      <h2 id="screenmirroring-httprequests">6.1. HTTP requests</h2>
+      <p>Screen mirroring does not use the standard AirPlay service. Instead it
+      connects to an apparently hard-coded port 7100. This is a HTTP server
+      which supports the following requests:</p>
+
+      <h3>GET /stream.xml</h3>
+
+      <p>Retrieve information about the server capabilities. The server sends an
+      XML property list with the following properties:</p>
+
+      <table>
+      <colgroup>
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      </colgroup>
+
+      <thead>
+      <tr>
+       <th style="text-align:left;">key</th>
+       <th style="text-align:left;">type</th>
+       <th style="text-align:left;">value</th>
+       <th style="text-align:left;">description</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+       <td style="text-align:left;"><code>height</code></td>
+       <td style="text-align:left;">integer</td>
+       <td style="text-align:left;">720</td>
+       <td style="text-align:left;">vertical resolution</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>width</code></td>
+       <td style="text-align:left;">integer</td>
+       <td style="text-align:left;">1280</td>
+       <td style="text-align:left;">horizontal resolution</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>overscanned</code></td>
+       <td style="text-align:left;">boolean</td>
+       <td style="text-align:left;">true</td>
+       <td style="text-align:left;">is the display overscanned?</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>refreshRate</code></td>
+       <td style="text-align:left;">real</td>
+       <td style="text-align:left;">0.01666…</td>
+       <td style="text-align:left;">refresh rate 60 Hz (1/60)</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;"><code>version</code></td>
+       <td style="text-align:left;">string</td>
+       <td style="text-align:left;">130.14</td>
+       <td style="text-align:left;">server version</td>
+      </tr>
+      </tbody>
+      </table>
+      <p>These properties tell us that the AirPlay server is connected to a
+      1280x720, 60 Hz, overscanned display.</p>
+
+      <p><span class="ex">Example:</span> fetch mirroring server informations</p>
+
+      <p class="cli_srv">client → server</p>
+
+      <pre><code>GET /stream.xml HTTP/1.1
+Content-Length: 0
+</code></pre>
+
+      <p class="srv_cli">server → client</p>
+
+      <pre><code>HTTP/1.1 200 OK
+Date: Mon, 08 Mar 2012 15:30:27 GMT
+Content-Type: text/x-apple-plist+xml
+Content-Length: 411
+
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+ "http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;
+&lt;plist version="1.0"&gt;
+ &lt;dict&gt;
+  &lt;key&gt;height&lt;/key&gt;
+  &lt;integer&gt;720&lt;/integer&gt;
+  &lt;key&gt;overscanned&lt;/key&gt;
+  &lt;true/&gt;
+  &lt;key&gt;refreshRate&lt;/key&gt;
+  &lt;real&gt;0.016666666666666666&lt;/real&gt;
+  &lt;key&gt;version&lt;/key&gt;
+  &lt;string&gt;130.14&lt;/string&gt;
+  &lt;key&gt;width&lt;/key&gt;
+  &lt;integer&gt;1280&lt;/integer&gt;
+ &lt;/dict&gt;
+&lt;/plist&gt;
+</code></pre>
+
+      <h3>POST /stream</h3>
+
+      <p>Start the live video transmission. The client sends a binary property
+      list with information about the stream, immediately followed by the
+      stream itself. At this point, the connection is no longer a valid HTTP
+      connection.</p>
+
+      <p>The following parameters are sent:</p>
+
+      <table>
+      <colgroup>
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      </colgroup>
+
+      <thead>
+      <tr>
+       <th style="text-align:left;">key</th>
+       <th style="text-align:left;">type</th>
+       <th style="text-align:left;">value</th>
+       <th style="text-align:left;">description</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+       <td style="text-align:left;">deviceID</td>
+       <td style="text-align:left;">integer</td>
+       <td style="text-align:left;">181221086727016</td>
+       <td style="text-align:left;">MAC address (A4:D1:D2:80:0B:68)</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">sessionID</td>
+       <td style="text-align:left;">integer</td>
+       <td style="text-align:left;">–808788724</td>
+       <td style="text-align:left;">session ID (0xcfcadd0c)</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">version</td>
+       <td style="text-align:left;">string</td>
+       <td style="text-align:left;">130.16</td>
+       <td style="text-align:left;">server version</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">param1</td>
+       <td style="text-align:left;">data</td>
+       <td style="text-align:left;">(72 bytes)</td>
+       <td style="text-align:left;">AES key, encrypted with FairPlay</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">param2</td>
+       <td style="text-align:left;">data</td>
+       <td style="text-align:left;">(16 bytes)</td>
+       <td style="text-align:left;">AES initialization vector</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">latencyMs</td>
+       <td style="text-align:left;">integer</td>
+       <td style="text-align:left;">90</td>
+       <td style="text-align:left;">video latency in ms</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">fpsInfo</td>
+       <td style="text-align:left;">array</td>
+       <td style="text-align:left;"></td>
+       <td style="text-align:left;"></td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">timestampInfo</td>
+       <td style="text-align:left;">array</td>
+       <td style="text-align:left;"></td>
+       <td style="text-align:left;"></td>
+      </tr>
+      </tbody>
+      </table>
+      <p>The <code>param1</code> and <code>param2</code> parameters are optional.</p>
+
+      <p>As soon as the server receives a <code>/stream</code> request, it will send NTP
+      requests to the client on port 7010, which seems hard-coded as well. The
+      client needs to export its master clock there, which will be used for
+      audio/video synchronization and clock recovery.</p>
+
+      <p><span class="ex">Example:</span> send stream information</p>
+
+      <p class="cli_srv">client → server</p>
+
+      <pre><code>POST /stream HTTP/1.1
+X-Apple-Device-ID: 0xa4d1d2800b68
+Content-Length: 503
+
+&lt;BINARY PLIST DATA&gt;
+
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+ "http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;
+&lt;plist version="1.0"&gt;
+ &lt;dict&gt;
+  &lt;key&gt;deviceID&lt;/key&gt;
+  &lt;integer&gt;181221086727016&lt;/integer&gt;
+  &lt;key&gt;fpsInfo&lt;/key&gt;
+  &lt;array&gt;
+   &lt;dict&gt; &lt;key&gt;name&lt;/key&gt; &lt;string&gt;SubS&lt;/string&gt; &lt;/dict&gt;
+   &lt;dict&gt; &lt;key&gt;name&lt;/key&gt; &lt;string&gt;B4En&lt;/string&gt; &lt;/dict&gt;
+   &lt;dict&gt; &lt;key&gt;name&lt;/key&gt; &lt;string&gt;EnDp&lt;/string&gt; &lt;/dict&gt;
+   &lt;dict&gt; &lt;key&gt;name&lt;/key&gt; &lt;string&gt;IdEn&lt;/string&gt; &lt;/dict&gt;
+   &lt;dict&gt; &lt;key&gt;name&lt;/key&gt; &lt;string&gt;IdDp&lt;/string&gt; &lt;/dict&gt;
+   &lt;dict&gt; &lt;key&gt;name&lt;/key&gt; &lt;string&gt;EQDp&lt;/string&gt; &lt;/dict&gt;
+   &lt;dict&gt; &lt;key&gt;name&lt;/key&gt; &lt;string&gt;QueF&lt;/string&gt; &lt;/dict&gt;
+   &lt;dict&gt; &lt;key&gt;name&lt;/key&gt; &lt;string&gt;Sent&lt;/string&gt; &lt;/dict&gt;
+  &lt;/array&gt;
+  &lt;key&gt;latencyMs&lt;/key&gt;
+  &lt;integer&gt;90&lt;/integer&gt;
+  &lt;key&gt;param1&lt;/key&gt;
+  &lt;data&gt;
+  RlBMWQECAQAAAAA8AAAAANvKuDizduszL1hG9IvIk+AAAAAQukdPJ5Jw/gGBAl22WZdF
+  m9ujZEGIV7jm3ZByWm51HjpDwjYY
+  &lt;/data&gt;
+  &lt;key&gt;param2&lt;/key&gt;
+  &lt;data&gt;
+  3qpOHtYWbBPyEWPnGt1BuQ==
+  &lt;/data&gt;
+  &lt;key&gt;sessionID&lt;/key&gt;
+  &lt;integer&gt;-808788724&lt;/integer&gt;
+  &lt;key&gt;timestampInfo&lt;/key&gt;
+  &lt;array&gt;
+   &lt;dict&gt; &lt;key&gt;name&lt;/key&gt; &lt;string&gt;SubSu&lt;/string&gt; &lt;/dict&gt;
+   &lt;dict&gt; &lt;key&gt;name&lt;/key&gt; &lt;string&gt;BePxT&lt;/string&gt; &lt;/dict&gt;
+   &lt;dict&gt; &lt;key&gt;name&lt;/key&gt; &lt;string&gt;AfPxT&lt;/string&gt; &lt;/dict&gt;
+   &lt;dict&gt; &lt;key&gt;name&lt;/key&gt; &lt;string&gt;BefEn&lt;/string&gt; &lt;/dict&gt;
+   &lt;dict&gt; &lt;key&gt;name&lt;/key&gt; &lt;string&gt;EmEnc&lt;/string&gt; &lt;/dict&gt;
+   &lt;dict&gt; &lt;key&gt;name&lt;/key&gt; &lt;string&gt;QueFr&lt;/string&gt; &lt;/dict&gt;
+   &lt;dict&gt; &lt;key&gt;name&lt;/key&gt; &lt;string&gt;SndFr&lt;/string&gt; &lt;/dict&gt;
+  &lt;/array&gt;
+  &lt;key&gt;version&lt;/key&gt;
+  &lt;string&gt;130.16&lt;/string&gt;
+ &lt;/dict&gt;
+&lt;/plist&gt;
+</code></pre>
+
+      <h2 id="screenmirroring-streampackets">6.2. Stream Packets</h2>
+      <p>The video stream is packetized using 128-byte headers, followed by an
+      optional payload. Only the first 64 bytes of headers seem to be used.
+      Headers start with the following little-endian fields:</p>
+
+      <table>
+      <colgroup>
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      </colgroup>
+
+      <thead>
+      <tr>
+       <th style="text-align:left;">size</th>
+       <th style="text-align:left;">description</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+       <td style="text-align:left;">4 bytes</td>
+       <td style="text-align:left;">payload size</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">2 bytes</td>
+       <td style="text-align:left;">payload type</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">2 bytes</td>
+       <td style="text-align:left;">0x1e if type = 2, else 6</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">8 bytes</td>
+       <td style="text-align:left;">NTP timestamp</td>
+      </tr>
+      </tbody>
+      </table>
+      <p>There are 3 types of packets:</p>
+
+      <table>
+      <colgroup>
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      </colgroup>
+
+      <thead>
+      <tr>
+       <th style="text-align:left;">type</th>
+       <th style="text-align:left;">description</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+       <td style="text-align:left;">0</td>
+       <td style="text-align:left;">video bitstream</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">1</td>
+       <td style="text-align:left;">codec data</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">2</td>
+       <td style="text-align:left;">heartbeat</td>
+      </tr>
+      </tbody>
+      </table>
+      <h3>Codec Data</h3>
+
+      <p>This packet contains the H.264 extra data in <em>avcC</em> format (<a href="http://www.iso.org/iso/iso_catalogue/catalogue_tc/catalogue_detail.htm?csnumber=55980">ISO/IEC
+      14496:15</a>). It is sent at the beginning of the stream, each time the
+      video properties might change, when screen orientation changes, and when
+      the screen is turned on or off.</p>
+
+      <p class="caption">H.264 codec data from iPad</p>
+
+      <pre><code>0000   01 64 c0 28 ff e1 00 10 67 64 c0 28 ac 56 20 0d
+0010   81 4f e5 9b 81 01 01 01 01 00 04 28 ee 3c b0
+</code></pre>
+
+      <p>The H.264 codec data is interpreted as follows:</p>
+
+      <table>
+      <colgroup>
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      </colgroup>
+
+      <thead>
+      <tr>
+       <th style="text-align:left;">size</th>
+       <th style="text-align:left;">value</th>
+       <th style="text-align:left;">description</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+       <td style="text-align:left;">1 byte</td>
+       <td style="text-align:left;">1</td>
+       <td style="text-align:left;">version</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">1 byte</td>
+       <td style="text-align:left;">100</td>
+       <td style="text-align:left;">profile (high)</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">1 byte</td>
+       <td style="text-align:left;">0xc0</td>
+       <td style="text-align:left;">compatibility</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">1 byte</td>
+       <td style="text-align:left;">40</td>
+       <td style="text-align:left;">level (4.0)</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">6 bits</td>
+       <td style="text-align:left;">0x3f</td>
+       <td style="text-align:left;">reserved</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">2 bits</td>
+       <td style="text-align:left;">3</td>
+       <td style="text-align:left;">NAL units length size - 1</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">3 bits</td>
+       <td style="text-align:left;">0x7</td>
+       <td style="text-align:left;">reserved</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">5 bits</td>
+       <td style="text-align:left;">1</td>
+       <td style="text-align:left;">number of SPS</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">2 bytes</td>
+       <td style="text-align:left;">16</td>
+       <td style="text-align:left;">length of SPS</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">16 bytes</td>
+       <td style="text-align:left;">…</td>
+       <td style="text-align:left;">Sequence parameter set</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">1 byte</td>
+       <td style="text-align:left;">1</td>
+       <td style="text-align:left;">number of PPS</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">2 bytes</td>
+       <td style="text-align:left;">4</td>
+       <td style="text-align:left;">length of PPS</td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">4 bytes</td>
+       <td style="text-align:left;">…</td>
+       <td style="text-align:left;">Picture parameter set</td>
+      </tr>
+      </tbody>
+      </table>
+      <p class="caption">Codec data packet from iPad</p>
+
+      <pre><code>0000   1f 00 00 00 01 00 06 00 1d 9a 9f 59 ef de 00 00
+0010   00 00 58 44 00 00 22 44 00 00 00 00 00 00 00 00
+0020   00 00 00 00 00 00 00 00 00 00 58 44 00 00 22 44
+0030   00 00 50 43 00 00 10 42 00 c0 57 44 00 c0 21 44
+0040   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+0050   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+0060   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+0070   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+0080   01 64 c0 28 ff e1 00 10 67 64 c0 28 ac 56 20 0d
+0090   81 4f e5 9b 81 01 01 01 01 00 04 28 ee 3c b0
+</code></pre>
+
+      <h3>Video Bitstream</h3>
+
+      <p>This packet contains the video bitstream to be decoded. The payload can
+      be optionally AES encrypted. The NTP timestamp found in the header
+      serves as presentation timestamp.</p>
+
+      <p class="caption">Video bitstream packet from iPad</p>
+
+      <pre><code>0000   c8 08 00 00 00 00 06 00 e9 e6 f5 ac 60 e0 00 00
+0010   58 37 6e f9 40 01 00 00 00 00 00 00 00 00 00 00
+0020   00 00 00 00 00 00 00 00 00 00 58 44 00 00 22 44
+0030   00 00 50 43 00 00 10 42 00 c0 57 44 00 c0 21 44
+0040   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+0050   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+0060   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+0070   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+0080   ...
+</code></pre>
+
+      <h3>Heartbeat</h3>
+
+      <p>Sent every second, this packet does not contain any payload.</p>
+
+      <p class="caption">Heartbeat packet from iPad</p>
+
+      <pre><code>0000   00 00 00 00 02 00 1e 00 00 00 00 00 00 00 00 00
+0010   4d d8 1a 41 00 00 00 00 00 00 20 41 86 c9 e2 36
+0020   00 00 00 00 80 88 44 4b 00 00 00 00 00 00 00 00
+0030   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+0040   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+0050   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+0060   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+0070   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+</code></pre>
+
+      <h2 id="screenmirroring-timesynchronization">6.3. Time Synchronization</h2>
+      <p>Time synchronization takes place on UDP ports 7010 (client) and 7011
+      (server), using the <em>NTP</em> protocol (<a href="http://www.ietf.org/rfc/rfc5905.txt">RFC 5905</a>). The AirPlay server runs
+      an NTP client. Requests are sent to the AirPlay client at 3 second
+      intervals. The reference date for the timestamps is the beginning of the
+      mirroring session.</p>
+
+      <p class="srv_cli">server → client</p>
+
+      <pre><code>0000   23 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+0010   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+0020   00 00 00 00 00 00 00 00 00 00 01 c4 c8 ac 5d b5
+
+Network Time Protocol
+    Flags: 0x23
+        00.. .... = Leap Indicator: no warning (0)
+        ..10 0... = Version number: NTP Version 4 (4)
+        .... .011 = Mode: client (3)
+    Peer Clock Stratum: unspecified or invalid (0)
+    Peer Polling Interval: invalid (0)
+    Peer Clock Precision: 1.000000 sec
+    Root Delay: 0.0000 sec
+    Root Dispersion: 0.0000 sec
+    Reference ID: NULL
+    Reference Timestamp: Jan 1, 1970 00:00:00.000000000 UTC
+    Origin Timestamp: Jan 1, 1970 00:00:00.000000000 UTC
+    Receive Timestamp: Jan 1, 1970 00:00:00.000000000 UTC
+    Transmit Timestamp: Jan 1, 1900 00:07:32.783880000 UTC
+</code></pre>
+
+      <p class="cli_srv">client → server</p>
+
+      <pre><code>0000   24 01 02 e8 00 00 00 00 00 00 00 00 41 49 52 50
+0010   00 00 00 00 00 00 00 00 00 00 01 c4 c8 ac 5d b5
+0020   00 00 01 c4 c9 6a 0b a1 00 00 01 c4 c9 78 73 d2
+
+Network Time Protocol
+    Flags: 0x24
+        00.. .... = Leap Indicator: no warning (0)
+        ..10 0... = Version number: NTP Version 4 (4)
+        .... .100 = Mode: server (4)
+    Peer Clock Stratum: primary reference (1)
+    Peer Polling Interval: invalid (2)
+    Peer Clock Precision: 0.000000 sec
+    Root Delay: 0.0000 sec
+    Root Dispersion: 0.0000 sec
+    Reference ID: Unidentified reference source 'AIRP'
+    Reference Timestamp: Jan 1, 1970 00:00:00.000000000 UTC
+    Origin Timestamp: Jan 1, 1900 00:07:32.783880000 UTC
+    Receive Timestamp: Jan 1, 1900 00:07:32.786774000 UTC
+    Transmit Timestamp: Jan 1, 1900 00:07:32.786994000 UTC
+</code></pre>
+
+      <h1 id="passwordprotection">7. Password Protection</h1>
+      <p>An AirPlay server can require a password for displaying any content from
+      the network. This is implemented using standard <em>HTTP Digest
+      Authentication</em> (<a href="http://www.ietf.org/rfc/rfc2617.txt">RFC 2617</a>), over RTSP for AirTunes, and HTTP for
+      everything else. The digest realms and usernames accepted by Apple TV are
+      the following:</p>
+
+      <table>
+      <colgroup>
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      </colgroup>
+
+      <thead>
+      <tr>
+       <th style="text-align:left;">service</th>
+       <th style="text-align:left;">realm</th>
+       <th style="text-align:left;">username</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+       <td style="text-align:left;">AirTunes</td>
+       <td style="text-align:left;"><code>raop</code></td>
+       <td style="text-align:left;"><code>iTunes</code></td>
+      </tr>
+      <tr>
+       <td style="text-align:left;">AirPlay</td>
+       <td style="text-align:left;"><code>AirPlay</code></td>
+       <td style="text-align:left;"><code>AirPlay</code></td>
+      </tr>
+      </tbody>
+      </table>
+      <p><span class="ex">Example 1:</span> AirTunes password request</p>
+
+      <p class="cli_srv">client → server</p>
+
+      <pre><code>ANNOUNCE rtsp://fe80::217:f2ff:fe0f:e0f6/3414156527 RTSP/1.0
+CSeq: 3
+Content-Type: application/sdp
+Content-Length: 348
+User-Agent: iTunes/10.6 (Macintosh; Intel Mac OS X 10.7.3) AppleWebKit/535.18.5
+Client-Instance: 56B29BB6CB904862
+DACP-ID: 56B29BB6CB904862
+Active-Remote: 448488758
+
+&lt;SDP DATA&gt;
+</code></pre>
+
+      <p class="srv_cli">server → client</p>
+
+      <pre><code>RTSP/1.0 401 Unauthorized
+Server: AirTunes/130.14
+WWW-Authenticate: Digest realm="raop", nonce="ddfd59b4aea7bbbcbbb3b60d3b2768b7"
+CSeq: 3
+</code></pre>
+
+      <p class="cli_srv">client → server</p>
+
+      <pre><code>ANNOUNCE rtsp://fe80::217:f2ff:fe0f:e0f6/3414156527 RTSP/1.0
+CSeq: 4
+Content-Type: application/sdp
+Content-Length: 348
+User-Agent: iTunes/10.6 (Macintosh; Intel Mac OS X 10.7.3) AppleWebKit/535.18.5
+Client-Instance: 56B29BB6CB904862
+DACP-ID: 56B29BB6CB904862
+Active-Remote: 448488758
+Authorization: Digest username="iTunes", realm="raop", nonce="ddfd59b4aea7bbbcbbb3b60d3b2768b7", uri="rtsp://fe80::217:f2ff:fe0f:e0f6/3414156527", response="36f93a97c9038598290729ec0f141b03"
+
+&lt;SDP DATA&gt;
+</code></pre>
+
+      <p class="srv_cli">server → client</p>
+
+      <pre><code>RTSP/1.0 200 OK
+Server: AirTunes/130.14
+CSeq: 4
+</code></pre>
+
+      <p><span class="ex">Example 2:</span> AirPlay password request</p>
+
+      <p class="cli_srv">client → server</p>
+
+      <pre><code>POST /play HTTP/1.1
+User-Agent: iTunes/10.6 (Macintosh; Intel Mac OS X 10.7.3) AppleWebKit/535.18.5
+Content-Length: 163
+Content-Type: text/parameters
+
+Content-Location: http://192.168.1.18:3689/airplay.mp4?database-spec='dmap.persistentid:0x63b5e5c0c201542e'&amp;item-spec='dmap.itemid:0x21e'
+Start-Position: 0.317546
+</code></pre>
+
+      <p class="srv_cli">server → client</p>
+
+      <pre><code>HTTP/1.1 401 Unauthorized
+Date: Fri, 09 Mar 2012 15:50:40 GMT
+Content-Length: 0
+WWW-Authenticate: Digest realm="AirPlay", nonce="MTMzMTMwODI0MCDEJP5Jo7HFo81rbAcKNKw2"
+</code></pre>
+
+      <p class="cli_srv">client → server</p>
+
+      <pre><code>POST /play HTTP/1.1
+User-Agent: iTunes/10.6 (Macintosh; Intel Mac OS X 10.7.3) AppleWebKit/535.18.5
+Content-Length: 163
+Content-Type: text/parameters
+Authorization: Digest username="AirPlay", realm="AirPlay", nonce="MTMzMTMwODI0MCDEJP5Jo7HFo81rbAcKNKw2", uri="/play", response="aa085eea3e66a2e56125a4957e70894a"
+
+Content-Location: http://192.168.1.18:3689/airplay.mp4?database-spec='dmap.persistentid:0x63b5e5c0c201542e'&amp;item-spec='dmap.itemid:0x21e'
+Start-Position: 0.317546
+</code></pre>
+
+      <p class="srv_cli">server → client</p>
+
+      <pre><code>HTTP/1.1 200 OK
+Date: Fri, 09 Mar 2012 15:50:40 GMT
+Content-Length: 0
+</code></pre>
+
+      <h1 id="history">8. History</h1>
+      <table>
+      <colgroup>
+      <col style="text-align:left;">
+      <col style="text-align:left;">
+      </colgroup>
+
+      <thead>
+      <tr>
+       <th style="text-align:left;">Date</th>
+       <th style="text-align:left;">Changes</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+       <td style="text-align:left;">2012–03–20</td>
+       <td style="text-align:left;">Initial version.</td>
+      </tr>
+      </tbody>
+      </table>
+      <h1 id="resources">9. Resources</h1>
+      <h2 id="resources-ietfrfcs">9.1. IETF RFCs</h2>
+      <ul>
+      <li><a href="http://www.ietf.org/rfc/rfc2616.txt">RFC 2616</a>: Hypertext Transfer Protocol – HTTP/1.1</li>
+      <li><a href="http://www.ietf.org/rfc/rfc2617.txt">RFC 2617</a>: HTTP Authentication: Basic and Digest Access Authentication</li>
+      <li><a href="http://www.ietf.org/rfc/rfc2326.txt">RFC 2326</a>: Real Time Streaming Protocol (RTSP)</li>
+      <li><a href="http://www.ietf.org/rfc/rfc4566.txt">RFC 4566</a>: SDP: Session Description Protocol</li>
+      <li><a href="http://www.ietf.org/rfc/rfc3550.txt">RFC 3550</a>: RTP: A Transport Protocol for Real-Time Applications</li>
+      <li><a href="http://www.ietf.org/rfc/rfc5905.txt">RFC 5905</a>: Network Time Protocol Version 4</li>
+      <li><a href="http://www.ietf.org/rfc/rfc4648.txt">RFC 4648</a>: The Base16, Base32, and Base64 Data Encodings</li>
+      </ul>
+
+      <h2 id="resources-ietfdrafts">9.2. IETF drafts</h2>
+      <ul>
+      <li><a href="http://www.ietf.org/id/draft-cheshire-dnsext-multicastdns-15.txt">Multicast DNS</a></li>
+      <li><a href="http://www.ietf.org/id/draft-cheshire-dnsext-dns-sd-11.txt">DNS-Based Service Discovery</a></li>
+      <li><a href="http://tools.ietf.org/id/draft-lentczner-rhttp-00.txt">Reverse HTTP</a></li>
+      <li><a href="http://tools.ietf.org/id/draft-pantos-http-live-streaming-07.txt">HTTP Live Streaming</a></li>
+      </ul>
+
+      <h2 id="resources-appleprotocols">9.3. Apple Protocols</h2>
+      <ul>
+      <li><a href="http://en.wikipedia.org/wiki/Digital_Audio_Access_Protocol">DAAP</a>: Digital Audio Access Protocol</li>
+      <li><a href="http://en.wikipedia.org/wiki/Digital_Audio_Control_Protocol">DACP</a>: Digital Audio Control Protocol</li>
+      <li><a href="http://en.wikipedia.org/wiki/Remote_Audio_Output_Protocol">RAOP</a>: Remote Audio Output Protocol</li>
+      </ul>
+      <div id="footer">
+        © 2012 <a href="mailto:clement.vasseur@gmail.com">Clément Vasseur</a>.
+        Last update: 2012-03-20.
+      </div>
+    </div>
+  
+
+</body></html>
