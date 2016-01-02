@@ -1,6 +1,7 @@
-{ # your 'try' block
+{ #'try' block
+    type python3 || { echo "Is python3 installed?"; exit }
     python3 main.py
-} || { # your 'catch' block
+} || { #'catch' block
     echo "Non-Zero exit status."
 }
 

@@ -1,6 +1,0 @@
-[submodule "airplay"]
-	path = airplay
-	url = git@github.com:elcuervo/airplay.git
-[submodule "test-server/totem-plugin-airplay"]
-	path = test-server/totem-plugin-airplay
-	url = git@github.com:dveeden/totem-plugin-airplay.git

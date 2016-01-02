@@ -5,15 +5,13 @@ I have always been annoyed about how iOS, Mac OSX, and all of Apples proprietary
 
 Project Status:
 ---
-Airplay discovery is working, and list is parsable with selection and items.
-
-Next step: convert selection to actual output of desktop images to Airplay device.
+https://github.com/robobenklein/openairplay/milestones
 
 Project Details:
 ---
 Right now it's Python 3 using the QT system from PyQt4.  
 It is designed in an Ubuntu Unity environment, but the final product should work on any platform with Python and a system tray.  
-From my last testing, this ran fine on my Dad's Windows 8 laptop, and I've tested Ubuntu 14.04-15.04.
+From my last testing, this ran fine on my Dad's Windows 8 laptop, and I've tested Ubuntu 14.04 to 15.10.
 
 Requirements:
 ---
