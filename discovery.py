@@ -14,6 +14,9 @@ airplayReceivers = []
 global discoveryStarted
 discoveryStarted = False
 
+global DEBUG
+DEBUG = True
+
 browser = None
 
 class AirplayListener(object):
@@ -25,7 +28,8 @@ class AirplayListener(object):
     def add_service(self, zeroconf, type, name):
         info = zeroconf.get_service_info(type, name)
         airplayReceivers.append(name)
-        print("Airplay receiver %s added, service info: %s" % (name, info))
+        if DEBUG:
+            print("Airplay receiver %s added, service info: %s" % (name, info))
 
 # Start the listener
 def start():
@@ -33,6 +37,8 @@ def start():
     listener = AirplayListener()
     browser = zeroconf.ServiceBrowser(ZC, "_airplay._tcp.local.", listener)
     started = True
+    if DEBUG:
+        print("Listener started.")
 
 # To stop it:
 def stop():
@@ -42,5 +48,7 @@ def stop():
         del browser
         del ZC
         discoveryStarted = False
+        if DEBUG:
+            print("Listener stopped.")
     else:
         print("WARN: discovery.stop() called but not running")
