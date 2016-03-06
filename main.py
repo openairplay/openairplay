@@ -87,6 +87,8 @@ class Window(QtGui.QDialog):
         self.timer.timeout.connect(self.updateReceivers)
 
         # Start discovery of airplay receivers:
+        if DEBUG:
+            print("Starting discovery service...")
         discovery.start()
 
     def setVisible(self, visible):
