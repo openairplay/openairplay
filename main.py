@@ -13,7 +13,7 @@ DEBUG = True
 if DEBUG:
     print("Debugging enabled.")
     print("Called with system args: " + str(sys.argv))
-    print("Python version: " ) #TODO
+    print("Python version: " + sys.version)
 
 # Qt GUI stuff
 try:
@@ -286,7 +286,7 @@ class Window(QtGui.QDialog):
 
 if __name__ == '__main__':
 
-    app = QtGui.QApplication(sys.argv)
+    app = QtGui.QApplication(['Open Airplay'])
 
     if not QtGui.QSystemTrayIcon.isSystemTrayAvailable():
         QtGui.QMessageBox.critical(None, "Systray", "I couldn't detect any system tray on this system.")
