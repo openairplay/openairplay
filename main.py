@@ -28,8 +28,9 @@ except ImportError:
 # Airplay Things:
 try:
     import discovery
+    import airplay
 except:
-    sys.exit("Discovery module could not be loaded.")
+    sys.exit("Could not import own classes.")
 
 class Window(QtGui.QDialog):
     def __init__(self):
