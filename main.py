@@ -263,7 +263,8 @@ class Window(QtGui.QDialog):
     def createActions(self): # Create Actions that can be taken from the System Tray Icon
         self.minimizeAction = QtGui.QAction("Mi&nimize", self, triggered=self.hide)
 
-        self.maximizeAction = QtGui.QAction("Ma&ximize", self, triggered=self.showMaximized)
+        # Application is not the kind to be maximized
+        #self.maximizeAction = QtGui.QAction("Ma&ximize", self, triggered=self.showMaximized)
 
         self.restoreAction = QtGui.QAction("&Restore", self, triggered=self.showNormal)
 
