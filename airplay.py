@@ -13,3 +13,18 @@ DEBUG = True
 if __name__ == '__main__':
     print("Use main.py instead.")
     sys.exit();
+
+# Qt GUI stuff
+try:
+    from PyQt4 import QtCore, QtGui
+    from PyQt4.QtCore import QSettings
+except ImportError:
+    print("There was an error importing the Qt python3 libraries,")
+    print("These are required by to operate this program.")
+    print("If you are on Ubuntu/Debian, they should be available via APT.")
+    sys.exit("Could not import Python3 Qt Libraries.")
+
+
+class AirplayDevice():
+    def __init__():
+        print("")
