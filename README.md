@@ -5,6 +5,13 @@ I have always been annoyed about how iOS, Mac OSX, and all of Apples proprietary
 
 Project Status:
 ---
+
+I no longer attend my highschool full of Apple devices, so I have no platform to test this project on.
+
+If someone wants to fund this project, buy me a 2nd gen Apple TV or later so I can actually get back to work on this project.
+
+Otherwise, I have no need or ability to continue development, so if you are able and willing, send over some PRs or code edits.
+
 https://github.com/robobenklein/openairplay/milestones
 
 Project Details:
