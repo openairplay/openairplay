@@ -95,7 +95,7 @@ class Window(QtGui.QDialog):
     def setVisible(self, visible):
         # When we want to 'disappear' into the system tray.
         self.minimizeAction.setEnabled(visible)
-        self.maximizeAction.setEnabled(not self.isMaximized())
+        #self.maximizeAction.setEnabled(not self.isMaximized())
         self.restoreAction.setEnabled(self.isMaximized() or not visible)
         super(Window, self).setVisible(visible)
 
@@ -273,7 +273,7 @@ class Window(QtGui.QDialog):
     def createTrayIcon(self):
         self.trayIconMenu = QtGui.QMenu(self)
         self.trayIconMenu.addAction(self.minimizeAction)
-        self.trayIconMenu.addAction(self.maximizeAction)
+        #self.trayIconMenu.addAction(self.maximizeAction)
         self.trayIconMenu.addAction(self.restoreAction)
         self.trayIconMenu.addSeparator()
         self.trayIconMenu.addAction(self.quitAction)
