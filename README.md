@@ -1,10 +1,14 @@
-open-airplay 0.0.32
-===
+# OpenAirplay 0.0.32
+
+Stream from a Linux computer to an Airplay Receiver.
+
+OpenAirplay is a python implementation of the Apple Airplay client, intended to mimic the OSX Airplay integration.
 
 I have always been annoyed about how iOS, Mac OSX, and all of Apples proprietary hardware/software has inhibited so many of us technology savvy people.  
 
-Project Status:
----
+## Project Status:
+
+**No longer under active development.**
 
 I no longer attend my highschool full of Apple devices, so I have no platform to test this project on.
 
@@ -14,18 +18,18 @@ Otherwise, I have no need or ability to continue development, so if you are able
 
 https://github.com/robobenklein/openairplay/milestones
 
-Project Details:
----
+## Project Details:
+
 Right now it's Python 3 using the QT system from PyQt4.  
-It is designed in an Ubuntu Unity environment, but the final product should work on any platform with Python and a system tray.  
+It is designed in an Ubuntu Unity environment, but the application should work on any platform with Python 3 and a system tray.  
 From my last testing, this ran fine on my Dad's Windows 8 laptop, and I've tested Ubuntu 14.04 to 15.10.
 
-Requirements:
----
+## Requirements:
+
 See the `dependencies.md` file for installing the needed software.
 
-Why I'm doing this:
----
+## Why I'm doing this:
+
 (From 2015:)  
 I go to a school where everyone has iPads as their learning tool, which are horrid for coding/programming and software development, but make a good classroom common tool. As a result, there is an Apple TV in every single room for the students to quickly present whatever is on their screen, and the teachers can show their presentations with their assigned Macbooks.
 
