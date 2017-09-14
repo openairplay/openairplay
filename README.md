@@ -1,6 +1,6 @@
 open-airplay 0.0.32
 ===
-
+Stream from Ubuntu to an AirPlay receiver with Open-AirPlay.
 I have always been annoyed about how iOS, Mac OSX, and all of Apples proprietary hardware/software has inhibited so many of us technology savvy people.  
 
 Project Status:
