@@ -16,8 +16,8 @@ if __name__ == '__main__':
 
 # Qt GUI stuff
 try:
-    from PyQt4 import QtCore, QtGui
-    from PyQt4.QtCore import QSettings
+    from PyQt5 import QtCore, QtGui
+    from PyQt5.QtCore import QSettings
 except ImportError:
     print("There was an error importing the Qt python3 libraries,")
     print("These are required by to operate this program.")
