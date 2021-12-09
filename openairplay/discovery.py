@@ -31,6 +31,11 @@ class AirplayListener(object):
         if DEBUG:
             print("Airplay receiver %s added, service info: %s" % (name, info))
 
+    def update_service(self, zeroconf, type, name):
+        info = zeroconf.get_service_info(type, name)
+        if name not in airplayReceivers:
+            raise RuntimeWarning(f"{name}'s service was updated, but is not known to us yet.")
+
 # Start the listener
 def start():
     ZC = zeroconf.Zeroconf()
