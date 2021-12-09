@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
-
-#  Copyright (C) 2015-2016 Ben Klein. All rights reserved.
-#
-#  This application is licensed under the GNU GPLv3 License, included with
-#  this application source.
+#  Copyright (C) 2015-2016 Ben Klein.
 
 import sys
 
@@ -26,11 +22,8 @@ except ImportError:
     sys.exit("Could not import Python3 Qt Libraries.")
 
 # Airplay Things:
-try:
-    import discovery
-    import airplay
-except:
-    sys.exit("Could not import own classes.")
+from . import discovery
+from . import airplay
 
 class Window(QtWidgets.QWidget):
     def __init__(self):
@@ -209,7 +202,7 @@ class Window(QtWidgets.QWidget):
         self.deviceListGroupBox.setLayout(deviceListLayout)
 
     def createMessageGroupBox(self): # Add the message test GUI window grouping.
-        self.messageGroupBox = QtWidgets.QGroupBox("Balloon Message Test:")
+        self.messageGroupBox = QtWidgets.QGroupBox("Notification Test:")
 
         typeLabel = QtWidgets.QLabel("Type:")
 
@@ -264,12 +257,12 @@ class Window(QtWidgets.QWidget):
         self.messageGroupBox.setLayout(messageLayout)
 
     def createActions(self): # Create Actions that can be taken from the System Tray Icon
-        self.minimizeAction = QtWidgets.QAction("Mi&nimize", self, triggered=self.hide)
+        self.minimizeAction = QtWidgets.QAction("Mi&nimize to Tray", self, triggered=self.hide)
 
         # Application is not the kind to be maximized
         #self.maximizeAction = QtWidgets.QAction("Ma&ximize", self, triggered=self.showMaximized)
 
-        self.restoreAction = QtWidgets.QAction("&Restore", self, triggered=self.showNormal)
+        self.restoreAction = QtWidgets.QAction("Show &Window", self, triggered=self.showNormal)
 
         self.quitAction = QtWidgets.QAction("&Quit", self, triggered=QtWidgets.qApp.quit)
 
