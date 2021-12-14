@@ -8,52 +8,82 @@ except ImportError:
     print("Please ensure you have it installed.")
     sys.exit("Could not find zeroconf.")
 
-global airplayReceivers
-airplayReceivers = []
+from PyQt5.QtCore import QObject, pyqtSignal
 
-global discoveryStarted
-discoveryStarted = False
+from . import log, utils
+from .receiver_device import AirplayReceiver, AirplayFeatures
 
-global DEBUG
-DEBUG = True
 
-browser = None
+# global airplayReceivers
+# airplayReceivers = []
+#
+# global discoveryStarted
+# discoveryStarted = False
 
-class AirplayListener(object):
+# global DEBUG
+# DEBUG = True
+
+# browser = None
+
+class AirplayServiceListener(QObject):
+    receiver_added = pyqtSignal([AirplayReceiver])
+    receiver_removed = pyqtSignal([AirplayReceiver])
+
+    def __init__(self):
+        self.ZC = zeroconf.Zeroconf()
+        self.browser = zeroconf.ServiceBrowser(self.ZC, "_airplay._tcp.local.", self)
+        self.devices = {}
+
+        super().__init__()
 
     def remove_service(self, zeroconf, type, name):
-        airplayReceivers.remove(name)
-        print("Airplay receiver %s removed" % (name,))
+        # airplayReceivers.remove(name)
+        if name not in self.devices:
+            log.warn(f"Device '{name}' not known, cannot remove service.")
+            return
+        del self.devices[name]
+        log.debug(f"Airplay receiver '{name}' removed")
+        self.receiver_removed.emit(self.devices[name])
 
     def add_service(self, zeroconf, type, name):
+        log.debug(f"Adding device '{name}' ...")
         info = zeroconf.get_service_info(type, name)
-        airplayReceivers.append(name)
-        if DEBUG:
-            print("Airplay receiver %s added, service info: %s" % (name, info))
+        # airplayReceivers.append(name)
+        self.devices[name] = AirplayReceiver(
+            name, info,
+            **{k.decode(): v.decode() for k, v in info.properties.items()}
+        )
+        log.debug(f"Airplay receiver '{name}' added, constructed: {self.devices[name]}")
+        self.receiver_added.emit(self.devices[name])
 
     def update_service(self, zeroconf, type, name):
         info = zeroconf.get_service_info(type, name)
-        if name not in airplayReceivers:
-            raise RuntimeWarning(f"{name}'s service was updated, but is not known to us yet.")
+        if name not in self.devices:
+            log.warn(f"Device '{name}' not known, cannot update service.")
+            return
+        log.warn("TODO: ZC listener service updates")
 
-# Start the listener
-def start():
-    ZC = zeroconf.Zeroconf()
-    listener = AirplayListener()
-    browser = zeroconf.ServiceBrowser(ZC, "_airplay._tcp.local.", listener)
-    started = True
-    if DEBUG:
-        print("Listener started.")
+    def quit(self):
+        self.ZC.close()
+        log.debug("Closed ZC browser")
 
-# To stop it:
-def stop():
-    if (browser is not None) or (discoveryStarted is True):
-        ZC.close()
-        del listener
-        del browser
-        del ZC
-        discoveryStarted = False
-        if DEBUG:
-            print("Listener stopped.")
-    else:
-        print("WARN: discovery.stop() called but not running")
+# # Start the listener
+# def start():
+#     ZC = zeroconf.Zeroconf()
+#
+#     started = True
+#     log.debug("Listener started.")
+#     return
+
+# # To stop it:
+# def stop():
+#     if (browser is not None) or (discoveryStarted is True):
+#         ZC.close()
+#         del listener
+#         del browser
+#         del ZC
+#         discoveryStarted = False
+#         if DEBUG:
+#             print("Listener stopped.")
+#     else:
+#         print("WARN: discovery.stop() called but not running")

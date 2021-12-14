@@ -3,13 +3,13 @@
 
 import sys
 
-global DEBUG
-DEBUG = True
+from . import log
+from .receiver_device import AirplayReceiver
 
-if DEBUG:
-    print("Debugging enabled.")
-    print("Called with system args: " + str(sys.argv))
-    print("Python version: " + sys.version)
+log.setLevel(log.DEBUG)
+log.debug("Debugging enabled.")
+log.debug("Called with system args: " + str(sys.argv))
+log.debug("Python version: " + sys.version)
 
 # Qt GUI stuff
 try:
@@ -74,16 +74,18 @@ class Window(QtWidgets.QWidget):
             print("The user chose not to show the system tray icon.")
             self.trayIconVisible(False)
 
-        # Setup stuff to poll available receivers every 3 seconds.
-        self.oldReceiverList = []
-        self.timer=QtCore.QTimer()
-        self.timer.start(3000)
-        self.timer.timeout.connect(self.updateReceivers)
+        # # Setup stuff to poll available receivers every 3 seconds.
+        # self.oldReceiverList = []
+        # self.timer=QtCore.QTimer()
+        # self.timer.start(3000)
+        # self.timer.timeout.connect(self.updateReceivers)
 
         # Start discovery of airplay receivers:
-        if DEBUG:
-            print("Starting discovery service...")
-        discovery.start()
+        log.debug("Starting discovery service...")
+        self.service_listener = discovery.AirplayServiceListener()
+
+        self.service_listener.receiver_added.connect(self.add_receiver)
+        self.service_listener.receiver_removed.connect(self.remove_receiver)
 
     def setVisible(self, visible):
         # When we want to 'disappear' into the system tray.
@@ -145,23 +147,37 @@ class Window(QtWidgets.QWidget):
         QtWidgets.QMessageBox.information(None, "OpenAirplay Help", "If you need help with OpenAirplay, "
         "see the Github page to file bug reports or see further documentation and help.")
 
+    def add_receiver(self, receiver: AirplayReceiver):
+        log.debug(f"Adding receiver to UI: {receiver.list_entry_name}")
+        item = QtWidgets.QListWidgetItem(receiver.list_entry_name)
+        self.deviceSelectList.addItem(item)
+        log.debug(f"Added receiver to deviceSelectList: '{receiver.name}'")
+
+    def remove_receiver(self, receiver: AirplayReceiver):
+        item_name = receiver.list_entry_name
+        items = self.deviceSelectList.findItems(item_name, QtCore.Qt.MatchExactly)
+        for x in items:
+            self.deviceSelectList.takeItem(self.deviceSelectList.row(x))
+            log.debug(f"Removed receiver from deviceSelectList: '{receiver.name}'")
+
     def updateReceivers(self):
-        if list(set(discovery.airplayReceivers) - set(self.oldReceiverList)) != []:
-            # The new list has items oldReceiverList doesn't!
-            for item in list(set(discovery.airplayReceivers) - set(self.oldReceiverList)):
-                self.oldReceiverList.append(item)
-                print("Adding device: " + item)
-                # Convert item to string to remove the excess info
-                item = QtWidgets.QListWidgetItem(str(item).replace("._airplay._tcp.local.", ""))
-                self.deviceSelectList.addItem(item)
-        if list(set(self.oldReceiverList) - set(discovery.airplayReceivers)) != []:
-            # Items have been removed from the list!
-            for item in list(set(self.oldReceiverList) - set(discovery.airplayReceivers)):
-                self.oldReceiverList.remove(item)
-                print("Removed device: " + item)
-                items = self.deviceSelectList.findItems(item, QtCore.Qt.MatchExactly)
-                for x in items:
-                    self.deviceSelectList.takeItem(self.deviceSelectList.row(x))
+        # if list(set(discovery.airplayReceivers) - set(self.oldReceiverList)) != []:
+        #     # The new list has items oldReceiverList doesn't!
+        #     for item in list(set(discovery.airplayReceivers) - set(self.oldReceiverList)):
+        #         self.oldReceiverList.append(item)
+        #         log.debug("Adding device: " + item)
+        #         # Convert item to string to remove the excess info
+        #         item = QtWidgets.QListWidgetItem(str(item).replace("._airplay._tcp.local.", ""))
+        #         self.deviceSelectList.addItem(item)
+        # if list(set(self.oldReceiverList) - set(discovery.airplayReceivers)) != []:
+        #     # Items have been removed from the list!
+        #     for item in list(set(self.oldReceiverList) - set(discovery.airplayReceivers)):
+        #         self.oldReceiverList.remove(item)
+        #         log.debug("Removed device: " + item)
+        #         items = self.deviceSelectList.findItems(item, QtCore.Qt.MatchExactly)
+        #         for x in items:
+        #             self.deviceSelectList.takeItem(self.deviceSelectList.row(x))
+        pass
 
     def createIconGroupBox(self): # Add the SysTray preferences window grouping
         self.iconGroupBox = QtWidgets.QGroupBox("Tray Icon")
@@ -279,7 +295,7 @@ class Window(QtWidgets.QWidget):
 
     def quit(self, reason):
         del self.settings
-        #discovery.stop()
+        self.service_listener.quit()
         sys.exit(reason)
 
 if __name__ == '__main__':
