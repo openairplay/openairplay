@@ -1,6 +1,8 @@
 
 from enum import Flag
+import plistlib
 
+import requests
 import zeroconf
 
 from . import log
@@ -82,16 +84,28 @@ class AirplayReceiverStatus(Flag):
     CloudLibraryIsOn = 2**16 # iCML
     ReceiverSessionIsActive = 2**17
 
+    @classmethod
+    def from_bits(cls, bits):
+        flags = cls(0)
+        for flag in cls:
+            if flag.value & bits:
+                flags |= flag
+        return flags
+
 class AirplayReceiver(SimpleRepr):
     def __init__(
             self, name: str, service_info: zeroconf.ServiceInfo,
-            **kwargs,
         ):
         self.name = name
         self.service_info = service_info
+        self.service_properties = {
+            k.decode(): v.decode() for k, v in service_info.properties.items()
+        }
 
-        for name, value in kwargs.items():
-            setattr(self, name, value)
+        # for name, value in kwargs.items():
+        #     setattr(self, name, value)
+
+    def parse_service_properties(self, **kwargs):
         # TODO set defaults for following expected properties and convert types
         # kwargs properties:
         self.model = kwargs.get("model", None) #: str = # None
@@ -100,7 +114,6 @@ class AirplayReceiver(SimpleRepr):
         self.fv = kwargs.get("fv", None) #: str = # None
         self.osvers = kwargs.get("osvers", None) #: str = # None
         self.deviceid = kwargs.get("deviceid", None) #: str = # None
-        self.features = kwargs.get("features", None) #: AirplayFeatures = # None
         self.pw = kwargs.get("pw", None) #: bool = # None
         self.acl = kwargs.get("acl", None) #: int = # None
         self.srcvers = kwargs.get("srcvers", None) # = # None
@@ -121,12 +134,24 @@ class AirplayReceiver(SimpleRepr):
         # pgid = # None
         # tsid = # None
 
-        flags = kwargs.get("flags", None) #: AirplayReceiverStatus = # None
+    @property
+    def features(self) -> AirplayFeatures:
+        features = self.service_properties.get("features", 0) #: AirplayFeatures = # None
+        features = int(features, 0)
+        features = AirplayFeatures.from_bits(features)
+        return features
+
+    @property
+    def status(self) -> AirplayReceiverStatus:
+        flags = self.service_properties.get("flags", 0) #: AirplayReceiverStatus
         flags = int(flags, 0)
-        self.flags = AirplayFeatures.from_bits(flags)
+        self.flags = AirplayReceiverStatus.from_bits(flags)
 
     def update_service_info(self, new_info):
         self.service_info = new_info
+        self.service_properties = {
+            k.decode(): v.decode() for k, v in self.service_info.properties.items()
+        }
 
     @property
     def friendly_name(self):
@@ -136,13 +161,29 @@ class AirplayReceiver(SimpleRepr):
     def list_entry_name(self):
         return f"{self.friendly_name} (at {self.service_info.server})"
 
-    # def __repr__(self):
-    #     return f"AirplayReceiver<{self.name}>"
+    def _get_ip_addresses(self):
+        return self.service_info.parsed_addresses()
+
+    @property
+    def ip_address(self):
+        return self._get_ip_addresses()[0]
+
+    def _get_server_info(self):
+        raise NotImplementedError()
 
 if __name__ == "__main__":
     example = "0x5A7FFEE6"
     ex_int = int(example, 0)
 
-    flags = AirplayFeatures.from_bits(ex_int)
+    features = AirplayFeatures.from_bits(ex_int)
 
-    print(f"{flags}")
+    print(f"Bits: {example}")
+    print(f"Parsed features: {features}")
+
+    example = "0x4"
+    ex_int = int(example, 0)
+
+    flags = AirplayReceiverStatus.from_bits(ex_int)
+
+    print(f"Bits: {example}")
+    print(f"Parsed features: {flags}")

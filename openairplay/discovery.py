@@ -51,39 +51,21 @@ class AirplayServiceListener(QObject):
         # airplayReceivers.append(name)
         self.devices[name] = AirplayReceiver(
             name, info,
-            **{k.decode(): v.decode() for k, v in info.properties.items()}
+            # **{k.decode(): v.decode() for k, v in info.properties.items()}
         )
         log.debug(f"Airplay receiver '{name}' added, constructed: {self.devices[name]}")
         self.receiver_added.emit(self.devices[name])
+
+        log.debug(f"Receiver addresses: {self.devices[name]._get_ip_addresses()}")
 
     def update_service(self, zeroconf, type, name):
         info = zeroconf.get_service_info(type, name)
         if name not in self.devices:
             log.warn(f"Device '{name}' not known, cannot update service.")
             return
-        log.warn("TODO: ZC listener service updates")
+        log.debug(f"Airplay receiver '{name}' service updated")
+        self.devices[name].update_service_info(info)
 
     def quit(self):
         self.ZC.close()
         log.debug("Closed ZC browser")
-
-# # Start the listener
-# def start():
-#     ZC = zeroconf.Zeroconf()
-#
-#     started = True
-#     log.debug("Listener started.")
-#     return
-
-# # To stop it:
-# def stop():
-#     if (browser is not None) or (discoveryStarted is True):
-#         ZC.close()
-#         del listener
-#         del browser
-#         del ZC
-#         discoveryStarted = False
-#         if DEBUG:
-#             print("Listener stopped.")
-#     else:
-#         print("WARN: discovery.stop() called but not running")

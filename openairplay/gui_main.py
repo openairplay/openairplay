@@ -160,25 +160,6 @@ class Window(QtWidgets.QWidget):
             self.deviceSelectList.takeItem(self.deviceSelectList.row(x))
             log.debug(f"Removed receiver from deviceSelectList: '{receiver.name}'")
 
-    def updateReceivers(self):
-        # if list(set(discovery.airplayReceivers) - set(self.oldReceiverList)) != []:
-        #     # The new list has items oldReceiverList doesn't!
-        #     for item in list(set(discovery.airplayReceivers) - set(self.oldReceiverList)):
-        #         self.oldReceiverList.append(item)
-        #         log.debug("Adding device: " + item)
-        #         # Convert item to string to remove the excess info
-        #         item = QtWidgets.QListWidgetItem(str(item).replace("._airplay._tcp.local.", ""))
-        #         self.deviceSelectList.addItem(item)
-        # if list(set(self.oldReceiverList) - set(discovery.airplayReceivers)) != []:
-        #     # Items have been removed from the list!
-        #     for item in list(set(self.oldReceiverList) - set(discovery.airplayReceivers)):
-        #         self.oldReceiverList.remove(item)
-        #         log.debug("Removed device: " + item)
-        #         items = self.deviceSelectList.findItems(item, QtCore.Qt.MatchExactly)
-        #         for x in items:
-        #             self.deviceSelectList.takeItem(self.deviceSelectList.row(x))
-        pass
-
     def createIconGroupBox(self): # Add the SysTray preferences window grouping
         self.iconGroupBox = QtWidgets.QGroupBox("Tray Icon")
 

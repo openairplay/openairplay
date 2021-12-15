@@ -1,3 +1,4 @@
 PyQt5
 zeroconf
 coloredlogs
+requests
