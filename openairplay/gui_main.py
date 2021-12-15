@@ -23,7 +23,6 @@ except ImportError:
 
 # Airplay Things:
 from . import discovery
-from . import airplay
 
 class Window(QtWidgets.QWidget):
     def __init__(self):
