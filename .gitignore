@@ -10,6 +10,9 @@ __pycache__/
 # C extensions
 *.so
 
+# Doxygen
+doxygen-open-air-play/
+
 # Distribution / packaging
 .Python
 env/
