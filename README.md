@@ -24,12 +24,13 @@ __Note:__ you can also create the virtual python environment directly within the
 $ cd ~/ && mkdir python_envs && cd python_envs
 ```
 
-4. Create python 3 virtualenv.  
+4. Create python 3 virtual environment.  
 ```
 $ python3 -m venv openairplay
 ```
 
 5. Source the python environment.  You should see the name of the environment in parentheses after running the following command.  
+__Note:__ Python virtual environment will have to be soured every time before you run openairplay.   
 ```
 $ source ./openairplay/bin/activate
 ```
@@ -39,7 +40,7 @@ $ source ./openairplay/bin/activate
 $ cd <openairplay project directory>
 ```
 
-7. __Optional:__ Upgrade newly created virtualenvs pip.  
+7. __Optional:__ Upgrade newly created virtual environment's pip.  
 ```
 $ python -m pip install --upgrade pip
 ```
@@ -47,6 +48,14 @@ $ python -m pip install --upgrade pip
 8. Install python packages that are needed to run this project.  
 ```
 $ python -m pip install -r requirements.txt
+```
+
+## Doxygen Document
+
+1. Generate [Doxygen](https://www.doxygen.nl/manual/docblocks.html) Document.  
+__Note:__ Doxygen requires code to be commented in a special format to auto generate documentation.  
+```
+$ doxygen
 ```
 
 ## Project Status:
