@@ -52,7 +52,7 @@ $ python -m pip install -r requirements.txt
 
 ## Doxygen Document
 
-1. Generate [Doxygen](https://www.doxygen.nl/manual/docblocks.html) Document.  
+1. Generate [Doxygen](https://www.doxygen.nl/manual/docblocks.html) documentation.  
 __Note:__ Doxygen requires code to be commented in a special format to auto generate documentation.  
 ```
 $ doxygen
