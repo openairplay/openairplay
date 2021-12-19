@@ -1,3 +1,6 @@
 [submodule "test/RPiPlay"]
 	path = test/RPiPlay
 	url = https://github.com/FD-/RPiPlay.git
+[submodule "test/UxPlay"]
+	path = test/UxPlay
+	url = https://github.com/FDH2/UxPlay.git

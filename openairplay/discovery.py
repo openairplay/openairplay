@@ -41,9 +41,9 @@ class AirplayServiceListener(QObject):
         if name not in self.devices:
             log.warn(f"Device '{name}' not known, cannot remove service.")
             return
-        del self.devices[name]
         log.debug(f"Airplay receiver '{name}' removed")
         self.receiver_removed.emit(self.devices[name])
+        self.devices[name] = None # permit other references to persist
 
     def add_service(self, zeroconf, type, name):
         log.debug(f"Adding device '{name}' ...")
