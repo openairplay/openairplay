@@ -63,8 +63,8 @@ class AirplayServiceListener(QObject):
         if name not in self.devices:
             log.warn(f"Device '{name}' not known, cannot update service.")
             return
-        log.debug(f"Airplay receiver '{name}' service updated")
         self.devices[name].update_service_info(info)
+        log.debug(f"Airplay receiver '{name}' service updated: {self.devices[name]}")
 
     def quit(self):
         self.ZC.close()

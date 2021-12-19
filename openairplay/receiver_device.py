@@ -172,18 +172,23 @@ class AirplayReceiver(SimpleRepr):
         raise NotImplementedError()
 
 if __name__ == "__main__":
-    example = "0x5A7FFEE6"
-    ex_int = int(example, 0)
+    test_features = {
+        "RPiPlay": "0x5A7FFEE6",
+        # "UxPlay": "0x5A7FFEE6",
+    }
 
-    features = AirplayFeatures.from_bits(ex_int)
+    for name, example in test_features.items():
+        ex_int = int(example, 0)
+        features = AirplayFeatures.from_bits(ex_int)
+        print(f"{name} bits: {example}")
+        print(f"{name} features: {features}")
 
-    print(f"Bits: {example}")
-    print(f"Parsed features: {features}")
+    test_flags = {
+        "RPiPlay Idle": "0x4",
+    }
 
-    example = "0x4"
-    ex_int = int(example, 0)
-
-    flags = AirplayReceiverStatus.from_bits(ex_int)
-
-    print(f"Bits: {example}")
-    print(f"Parsed features: {flags}")
+    for name, example in test_flags.items():
+        ex_int = int(example, 0)
+        flags = AirplayReceiverStatus.from_bits(ex_int)
+        print(f"{name} bits: {example}")
+        print(f"{name} flags: {flags}")
