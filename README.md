@@ -6,11 +6,54 @@ OpenAirplay is a python implementation of the Apple Airplay client, intended to 
 
 I have always been annoyed about how iOS, Mac OSX, and all of Apples proprietary hardware/software has inhibited so many of us technology savvy people.  
 
+## Getting Started
+
+1. Clone the repository.  
+```
+$ git clone https://github.com/openairplay/openairplay.git
+```
+
+2. Initialize and pull sub-modules.  
+```
+$ git submodule update --init --recursive
+```
+
+3. Create virtual environment directory.  
+__Note:__ you can also create the virtual python environment directly within the directory containing the openairplay project if you would like.  
+```
+$ cd ~/ && mkdir python_envs && cd python_envs
+```
+
+4. Create python 3 virtualenv.  
+```
+$ python3 -m venv openairplay
+```
+
+5. Source the python environment.  You should see the name of the environment in parentheses after running the following command.  
+```
+$ source ./openairplay/bin/activate
+```
+
+6. Move to the directory where you have pulled this project.  
+```
+$ cd <openairplay project directory>
+```
+
+7. __Optional:__ Upgrade newly created virtualenvs pip.  
+```
+$ python -m pip install --upgrade pip
+```
+
+8. Install python packages that are needed to run this project.  
+```
+$ python -m pip install -r requirements.txt
+```
+
 ## Project Status:
 
 **No longer under active development.**
 
-I no longer attend my highschool full of Apple devices, so I have no platform to test this project on.
+I no longer attend my high school full of Apple devices, so I have no platform to test this project on.
 
 If someone wants to fund this project, buy me a 2nd gen Apple TV or later so I can actually get back to work on this project.
 
@@ -35,19 +78,20 @@ I go to a school where everyone has iPads as their learning tool, which are horr
 
 I am one of two people at this school who use Linux (Ubuntu) and who bring their laptops every day. I use mine for school work fairly often, as I understand how much I can do in Linux and not iOS. But whenever some task comes up where I'd need to airplay my work to an Apple TV, I'm being restrained to my iPad.
 
-What this aims to be:
----
-This application is designed to sit in your System Tray just like in OSX, with a drop down list of available Airplay Recievers, and allow you to:
+## What this aims to be:
+
+This application is designed to sit in your System Tray just like in OSX, with a drop down list of available Airplay Receivers, and allow you to:
 - Stream your desktop  
 - Send a photo/picture  
 - Play a video  
 - Stream Music  
 And whatever else the users and developers of this project wish it to be.
 
-Want to help?
----
+## Want to help?
+
 I'm always looking for contributors, if you can help with any of these I'd love to work with you.  
  * Python network discovery protocols (for finding listings of devices)
  * Airplay/Media protocols
  * Python Qt (thinking about things like screen capture)
  * And developers to help make this work for non-Ubuntu OSs.
+
