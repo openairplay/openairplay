@@ -23,25 +23,37 @@ $ cd openairplay
 $ git submodule update --init --recursive
 ```
 
-4. Create python 3 virtual environment.  
+### Automated Virtual Environment Setup
+1. First run will install python3 virtual environment and all proceeding runs will start Open Air Play.  
+```
+$ ./run.sh
+```
+
+### Manual Virtual Environment Setup
+1. Create python 3 virtual environment.  
 ```
 $ python3 -m venv env
 ```
 
-5. Source the python environment.  You should see the name of the environment in parentheses after running the following command.  
+2. Source the python environment.  You should see the name of the environment in parentheses after running the following command.  
 __Note:__ Python virtual environment will have to be soured every time before you run openairplay.   
 ```
 $ source ./env/bin/activate
 ```
 
-6. __Optional:__ Upgrade newly created virtual environment's pip.  
+3. __Optional:__ Upgrade newly created virtual environment's pip.  
 ```
 $ python -m pip install --upgrade pip
 ```
 
-7. Install python packages that are needed to run this project.  
+4. Install python packages that are needed to run this project.  
 ```
 $ python -m pip install -r requirements.txt
+```
+
+5. Run Open Air Play
+```
+$ python3 -m openairplay.gui_main
 ```
 
 ## Doxygen Documentation

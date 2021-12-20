@@ -11,7 +11,7 @@ __pycache__/
 *.so
 
 # Doxygen
-doxygen-open-air-play/
+documentation/doxygen-open-air-play/
 
 # Distribution / packaging
 .Python
