@@ -13,39 +13,33 @@ I have always been annoyed about how iOS, Mac OSX, and all of Apples proprietary
 $ git clone https://github.com/openairplay/openairplay.git
 ```
 
-2. Initialize and pull sub-modules.  
+2. Move to the directory where you have pulled this project.  
+```
+$ cd openairplay
+```
+
+3. Initialize and pull sub-modules.  
 ```
 $ git submodule update --init --recursive
 ```
 
-3. Create virtual environment directory.  
-__Note:__ you can also create the virtual python environment directly within the directory containing the openairplay project if you would like.  
-```
-$ cd ~/ && mkdir python_envs && cd python_envs
-```
-
 4. Create python 3 virtual environment.  
 ```
-$ python3 -m venv openairplay
+$ python3 -m venv env
 ```
 
 5. Source the python environment.  You should see the name of the environment in parentheses after running the following command.  
 __Note:__ Python virtual environment will have to be soured every time before you run openairplay.   
 ```
-$ source ./openairplay/bin/activate
+$ source ./env/bin/activate
 ```
 
-6. Move to the directory where you have pulled this project.  
-```
-$ cd <openairplay project directory>
-```
-
-7. __Optional:__ Upgrade newly created virtual environment's pip.  
+6. __Optional:__ Upgrade newly created virtual environment's pip.  
 ```
 $ python -m pip install --upgrade pip
 ```
 
-8. Install python packages that are needed to run this project.  
+7. Install python packages that are needed to run this project.  
 ```
 $ python -m pip install -r requirements.txt
 ```
