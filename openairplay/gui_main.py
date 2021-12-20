@@ -156,9 +156,9 @@ class Window(QtWidgets.QWidget):
         self.deviceSelectList.addItem(item)
         log.debug(f"Added receiver to deviceSelectList: '{receiver.name}'")
 
-        # log.debug(f"Scanning for pyatv device...")
+        log.debug(f"Scanning for pyatv device...")
         # # XXX HACK TODO: non-blocking lookup
-        # tv = asyncio.ensure_future(receiver._scan_for_device())
+        tv = asyncio.ensure_future(receiver._scan_for_device())
         # log.debug(f"scan found: {tv}")
 
     def remove_receiver(self, receiver: AirplayReceiver):
