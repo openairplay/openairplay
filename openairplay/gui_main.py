@@ -4,28 +4,23 @@
 import sys
 import asyncio
 
+from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtCore import QSettings
 from qasync import QEventLoop
 
 from . import log
+from . import discovery
 from .receiver_device import AirplayReceiver
+from .mirroring import OpenAirPlayMirroringClient
 
+# TEMP
 log.setLevel(log.DEBUG)
 log.debug("Debugging enabled.")
 log.debug("Called with system args: " + str(sys.argv))
 log.debug("Python version: " + sys.version)
 
-# Qt GUI stuff
-try:
-    from PyQt5 import QtCore, QtGui, QtWidgets
-    from PyQt5.QtCore import QSettings
-except ImportError:
-    print("There was an error importing the Qt python3 libraries,")
-    print("These are required by to operate this program.")
-    print("If you are on Ubuntu/Debian, they should be available via APT.")
-    sys.exit("Could not import Python3 Qt Libraries.")
+AIRPLAY_NO_DISPLAY_NAME = "No display."
 
-# Airplay Things:
-from . import discovery
 
 class Window(QtWidgets.QWidget):
     def __init__(self):
@@ -73,7 +68,7 @@ class Window(QtWidgets.QWidget):
 
         # If the user chose not to show the system tray icon:
         if self.settings.value('systrayicon', type=bool) is False:
-            print("The user chose not to show the system tray icon.")
+            log.info("The user chose not to show the system tray icon.")
             self.trayIconVisible(False)
 
         # # Setup stuff to poll available receivers every 3 seconds.
@@ -153,13 +148,14 @@ class Window(QtWidgets.QWidget):
     def add_receiver(self, receiver: AirplayReceiver):
         log.debug(f"Adding receiver to UI: {receiver.list_entry_name}")
         item = QtWidgets.QListWidgetItem(receiver.list_entry_name)
+        item.setData(QtCore.Qt.UserRole, receiver)
         self.deviceSelectList.addItem(item)
         log.debug(f"Added receiver to deviceSelectList: '{receiver.name}'")
 
-        log.debug(f"Scanning for pyatv device...")
-        # # XXX HACK TODO: non-blocking lookup
-        tv = asyncio.ensure_future(receiver._scan_for_device())
-        # log.debug(f"scan found: {tv}")
+        # log.debug(f"Scanning for pyatv device...")
+        # # # XXX HACK TODO: non-blocking lookup
+        # tv = asyncio.ensure_future(receiver._scan_for_device())
+        # # log.debug(f"scan found: {tv}")
 
     def remove_receiver(self, receiver: AirplayReceiver):
         item_name = receiver.list_entry_name
@@ -167,6 +163,28 @@ class Window(QtWidgets.QWidget):
         for x in items:
             self.deviceSelectList.takeItem(self.deviceSelectList.row(x))
             log.debug(f"Removed receiver from deviceSelectList: '{receiver.name}'")
+
+    def start_mirroring_to_selection(self):
+        selected = [x.row() for x in self.deviceSelectList.selectedIndexes()]
+        if len(selected) > 1:
+            log.error(f"Mirroring to more than one display not supported")
+            raise NotImplementedError(f"Cannot mirror to more than one display.")
+        elif not selected:
+            log.warn(f"Select a device to mirror to.")
+            return
+
+        target_device_name = self.deviceSelectList.item(selected[0]).text()
+        if target_device_name == AIRPLAY_NO_DISPLAY_NAME:
+            # TODO stop mirroring to other displays
+            log.warn(f"TODO: no display -> stop")
+            return
+        target_device = self.deviceSelectList.item(selected[0]).data(QtCore.Qt.UserRole)
+        log.info(f"Starting mirroring to {target_device_name} ...")
+
+        self._active_mirroring_client = OpenAirPlayMirroringClient(target_device)
+        self._active_mirroring = asyncio.ensure_future(
+            self._active_mirroring_client.start()
+        )
 
     def createIconGroupBox(self): # Add the SysTray preferences window grouping
         self.iconGroupBox = QtWidgets.QGroupBox("Tray Icon")
@@ -198,12 +216,16 @@ class Window(QtWidgets.QWidget):
         self.deviceListGroupBox = QtWidgets.QGroupBox("Airplay to")
 
         self.deviceSelectList = QtWidgets.QListWidget()
-        deviceSelectListNoDisplayItem = QtWidgets.QListWidgetItem("No display.")
+        deviceSelectListNoDisplayItem = QtWidgets.QListWidgetItem(AIRPLAY_NO_DISPLAY_NAME)
         self.deviceSelectList.addItem(deviceSelectListNoDisplayItem)
+
+        self.deviceSelectStartMirroringButton = QtWidgets.QPushButton("Start Mirroring")
+        self.deviceSelectStartMirroringButton.clicked.connect(self.start_mirroring_to_selection)
 
         # layout
         deviceListLayout = QtWidgets.QHBoxLayout()
         deviceListLayout.addWidget(self.deviceSelectList)
+        deviceListLayout.addWidget(self.deviceSelectStartMirroringButton)
         self.deviceListGroupBox.setLayout(deviceListLayout)
 
     def createMessageGroupBox(self): # Add the message test GUI window grouping.
@@ -285,6 +307,8 @@ class Window(QtWidgets.QWidget):
     def quit(self, reason):
         del self.settings
         asyncio.ensure_future(self.service_listener.quit())
+        # pending = asyncio.all_tasks()
+        asyncio.get_running_loop().stop()
         sys.exit(reason)
 
 def __main__():

@@ -3,11 +3,13 @@ import plistlib
 import asyncio
 from typing import List
 from enum import Flag
+import ipaddress
 
 import requests
 import zeroconf
 import pyatv
 from pyatv.conf import AppleTV
+from pyatv.support.rtsp import RtspSession
 from pyatv.protocols.airplay.remote_control import RemoteControl as AirPlayRemoteControl
 
 from . import log
@@ -114,7 +116,9 @@ class AirplayReceiver(SimpleRepr):
             k.decode(): v.decode() for k, v in service_info.properties.items()
         }
 
+        self._pyatv_device_service = None
         self._pyatv_device_config = None
+        self._pyatv_rtsp_session = None
 
         # for name, value in kwargs.items():
         #     setattr(self, name, value)
@@ -123,28 +127,43 @@ class AirplayReceiver(SimpleRepr):
         fut_res = self._scan_for_device()
         return asyncio.run(fut_res)
 
-    async def _scan_for_device(self) -> AppleTV:
-        """This method *should* find the pyatv device for this Receiver"""
-        addresses = self._get_ipv4_addresses()
-        log.debug(f"starting scan for device at address {addresses}")
-        devices = await pyatv.scan(
-            loop=self.loop,
-            protocol=pyatv.const.Protocol.AirPlay,
-            # TODO https://github.com/postlund/pyatv/issues/1157
-            # add ipv6 discovery
-            hosts=addresses,
-            # hosts=[self.service_info.server],
-        )
-        log.debug(f"scan for {self.friendly_name} returned: {devices}")
-        if len(devices) > 1:
-            raise RuntimeWarning(f"scan for a single AirplayReceiver found multiple pyatv BaseConfigs")
-        elif len(devices) == 0:
-            log.warn(f"could not find a pyatv device across {addresses}")
-            return None
-            # raise RuntimeError(f"could not locate device via pyatv")
-        log.debug(f"scan finish: {devices[0]}")
-        self._pyatv_device_config = devices[0]
-        return self._pyatv_device_config
+    # async def _scan_for_device(self) -> AppleTV:
+    #     """This method *should* find the pyatv device for this Receiver"""
+    #     addresses = self._get_ipv4_addresses()
+    #     log.debug(f"starting scan for device at address {addresses}")
+    #
+    #     # TODO choose address based on interface metric
+    #
+    #     self._pyatv_device_config = AppleTV(ipaddress.ip_address(addresses[0]), self.name)
+    #
+    #     service = await self._get_pyatv_airplay_service()
+    #     self._pyatv_device_config.add_service(service)
+    #
+    #     return self._pyatv_device_config
+    #
+    # async def _get_pyatv_airplay_service(self, force_new=False):
+    #     if not self._pyatv_device_service or force_new:
+    #         self._pyatv_device_service = pyatv.conf.ManualService(
+    #             self.name,
+    #             protocol=pyatv.const.Protocol.AirPlay,
+    #             port=self.service_info.port,
+    #             properties=self.service_properties,
+    #         )
+    #     return self._pyatv_device_service
+
+    async def _get_pyatv_rtsp_session(self):
+        # TODO check state of connection
+        if not self._pyatv_rtsp_session:
+            # http_conn = pyatv.support.http.HttpConnection()
+            transport, protocol = await self.loop.create_connection(
+                lambda: pyatv.support.http.HttpConnection(),
+                self._get_ip_addresses()[0],
+                self.service_info.port - 1, # HACK?
+            )
+            self._pyatv_rtsp_session = RtspSession(
+                protocol,
+            )
+        return self._pyatv_rtsp_session
 
     def parse_service_properties(self, **kwargs):
         # TODO set defaults for following expected properties and convert types
@@ -194,10 +213,15 @@ class AirplayReceiver(SimpleRepr):
             k.decode(): v.decode() for k, v in self.service_info.properties.items()
         }
 
-        # look for device given new ip addresses
-        # TODO eventually should relegate this to only once the user shows interest in the device
-        if not self._pyatv_device_config:
-            future = asyncio.ensure_future(self._scan_for_device())
+        # # look for device given new ip addresses
+        # # TODO eventually should relegate this to only once the user shows interest in the device
+        # if not self._pyatv_device_config:
+        #     future = asyncio.ensure_future(self._scan_for_device())
+        #
+        # if not self._pyatv_device_service:
+        #     future = asyncio.ensure_future(self._get_pyatv_airplay_service(force_new=True))
+
+        # future = asyncio.ensure_future(self._get_server_info())
 
     @property
     def friendly_name(self) -> str:
@@ -217,8 +241,13 @@ class AirplayReceiver(SimpleRepr):
     def ip_address(self):
         return self._get_ip_addresses()[0]
 
-    def _get_server_info(self):
-        raise NotImplementedError()
+    async def _get_server_info(self):
+        rtsp_session = await self._get_pyatv_rtsp_session()
+        log.debug(f"acquiring server info ...")
+        info = await rtsp_session.info()
+        log.debug(f"got info: {info}")
+        self._server_rtsp_info = info
+        return info
 
 if __name__ == "__main__":
     test_features = {
