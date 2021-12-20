@@ -13,7 +13,7 @@ I have always been annoyed about how iOS, Mac OSX, and all of Apples proprietary
 $ git clone https://github.com/openairplay/openairplay.git
 ```
 
-2. Move to the directory where you have pulled this project.  
+2. Move into the newly cloned project directory.  
 ```
 $ cd openairplay
 ```
