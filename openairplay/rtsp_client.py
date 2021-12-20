@@ -7,10 +7,12 @@ from urllib.parse import urlparse
 from requests.structures import CaseInsensitiveDict
 
 from . import log
+from ._version import __version__
 
 RTSP_VERSION = "RTSP/1.0"
 LINE_SPLIT = "\r\n"
 HEADER_END = LINE_SPLIT * 2
+USER_AGENT = f"OpenAirPlay/{__version__}"
 
 
 class RTSPClient():
@@ -59,6 +61,12 @@ class RTSPClient():
             log.error(f"RTSPClient socket connection failed: {e}")
             raise e
 
+    @property
+    def _default_request_headers(self):
+        return CaseInsensitiveDict({
+            "User-Agent": USER_AGENT,
+        })
+
     def _recv_msg(self):
         if not self._sock:
             raise RuntimeError(f"RTSPClient socket not connected")
@@ -81,7 +89,7 @@ class RTSPClient():
                     break # stop parsing header
             # else:
             #     raise ValueError(f"remote end did not send complete header data")
-            while len(body_data) < headers["content-length"]:
+            while len(body_data) < int(headers["content-length"]):
                 # don't decode: could be binary plist
                 data = self._sock.recv(4096)
                 body_data += data
@@ -91,9 +99,43 @@ class RTSPClient():
             # did not receive enough data to meet content-length
             raise e
 
+    def _send_msg(self, method, args, content=None, version=None, headers={}):
+        """Write a message to the server"""
+        headline = f"{method.upper()} {args} {RTSP_VERSION}"
+
+        headers = CaseInsensitiveDict({**self._default_request_headers, **headers})
+
+        if content:
+            if isinstance(content, str):
+                content = content.encode("utf-8")
+            if isinstance(content, bytes):
+                headers["Content-Length"] = len(content)
+            else:
+                raise NotImplementedError(f"not sure how to encode {type(content)} for RTSP request")
+
+        # TODO some other checks for matching method, args, and content
+
+        headers["CSeq"] = self._cseq
+        self._cseq += 1
+
+        request_data = headline.encode("utf-8")
+        for k, v in headers.items():
+            request_data += f"{LINE_SPLIT}{k}: {v}".encode("utf-8")
+        request_data += HEADER_END.encode("utf-8")
+        if content:
+            request_data += content
+
+        self._sock.sendall(request_data)
+
+    def _make_request(self, *args, **kwargs):
+        self._send_msg(*args, **kwargs)
+        return self._recv_msg()
+
     def run(self):
         try:
             if not self._sock:
                 self._connect_socket()
 
         except Exception as e:
+            # TODO
+            raise e
