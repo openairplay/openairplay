@@ -3,6 +3,7 @@ import sys
 import socket
 import threading
 from urllib.parse import urlparse
+from collections import namedtuple
 
 from requests.structures import CaseInsensitiveDict
 
@@ -14,6 +15,7 @@ LINE_SPLIT = "\r\n"
 HEADER_END = LINE_SPLIT * 2
 USER_AGENT = f"OpenAirPlay/{__version__}"
 
+RTSPServerResponse = namedtuple("RTSPServerResponse", ["status", "headers", "content"])
 
 class RTSPClient():
     def __init__(self, url):
@@ -67,7 +69,7 @@ class RTSPClient():
             "User-Agent": USER_AGENT,
         })
 
-    def _recv_msg(self):
+    def _recv_msg(self) -> RTSPServerResponse:
         if not self._sock:
             raise RuntimeError(f"RTSPClient socket not connected")
         try:
@@ -93,7 +95,7 @@ class RTSPClient():
                 # don't decode: could be binary plist
                 data = self._sock.recv(4096)
                 body_data += data
-            return (status_line, headers, body_data)
+            return RTSPServerResponse(status_line, headers, body_data)
         except OSError as e:
             # TODO determine if socket needs to be closed / reset
             # did not receive enough data to meet content-length
@@ -127,7 +129,8 @@ class RTSPClient():
 
         self._sock.sendall(request_data)
 
-    def _make_request(self, *args, **kwargs):
+    def _make_request(self, *args, **kwargs) -> RTSPServerResponse:
+        """Takes the same args as _send_msg"""
         self._send_msg(*args, **kwargs)
         return self._recv_msg()
 
