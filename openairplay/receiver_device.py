@@ -1,4 +1,5 @@
 
+from typing import List
 from enum import Flag
 import plistlib
 
@@ -154,14 +155,14 @@ class AirplayReceiver(SimpleRepr):
         }
 
     @property
-    def friendly_name(self):
+    def friendly_name(self) -> str:
         return self.name.replace("._airplay._tcp.local.", "")
 
     @property
-    def list_entry_name(self):
+    def list_entry_name(self) -> str:
         return f"{self.friendly_name} (at {self.service_info.server})"
 
-    def _get_ip_addresses(self):
+    def _get_ip_addresses(self) -> List:
         return self.service_info.parsed_addresses()
 
     @property
