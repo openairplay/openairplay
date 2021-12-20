@@ -2,6 +2,9 @@
 #  Copyright (C) 2015-2016 Ben Klein.
 
 import sys
+import asyncio
+
+from qasync import QEventLoop
 
 from . import log
 from .receiver_device import AirplayReceiver
@@ -81,7 +84,8 @@ class Window(QtWidgets.QWidget):
 
         # Start discovery of airplay receivers:
         log.debug("Starting discovery service...")
-        self.service_listener = discovery.AirplayServiceListener()
+        self.service_listener = discovery.AirplayServiceListener(asyncio.get_running_loop())
+        self.service_listener.start()
 
         self.service_listener.receiver_added.connect(self.add_receiver)
         self.service_listener.receiver_removed.connect(self.remove_receiver)
@@ -97,19 +101,19 @@ class Window(QtWidgets.QWidget):
         # When someone clicks to close the window, not the tray icon.
         if self.trayIcon.isVisible():
             if self.settings.value('promptOnClose_systray', type=bool):
-                print("The program is returning to the system tray, user notified.")
+                log.info("The program is returning to the system tray, user notified.")
                 QtWidgets.QMessageBox.information(self, "Systray",
                     "The program will keep running in the system tray. \
                     To terminate the program, choose <b>Quit</b> in \
                     the menu of the system tray airplay icon.")
             else:
-                print("Program returned to system tray, user chose not to be notified.")
+                log.info("Program returned to system tray, user chose not to be notified.")
             self.hide()
             event.ignore()
-            print("Closing to System Tray")
+            log.info("Closing to System Tray")
         else:
-            print("Tray Icon not visible, quitting.")
-            self.quit("Exit: No system tray instance to close to.")
+            log.warn("Tray Icon not visible, quitting.")
+            self.quit(0)
 
     def setIcon(self, index):
         # Sets the selected icon in the tray and taskbar.
@@ -151,6 +155,11 @@ class Window(QtWidgets.QWidget):
         item = QtWidgets.QListWidgetItem(receiver.list_entry_name)
         self.deviceSelectList.addItem(item)
         log.debug(f"Added receiver to deviceSelectList: '{receiver.name}'")
+
+        # log.debug(f"Scanning for pyatv device...")
+        # # XXX HACK TODO: non-blocking lookup
+        # tv = asyncio.ensure_future(receiver._scan_for_device())
+        # log.debug(f"scan found: {tv}")
 
     def remove_receiver(self, receiver: AirplayReceiver):
         item_name = receiver.list_entry_name
@@ -275,21 +284,26 @@ class Window(QtWidgets.QWidget):
 
     def quit(self, reason):
         del self.settings
-        self.service_listener.quit()
+        asyncio.ensure_future(self.service_listener.quit())
         sys.exit(reason)
 
-if __name__ == '__main__':
+def __main__():
 
     app = QtWidgets.QApplication(['Open Airplay'])
+    loop = QEventLoop(app)
+    asyncio.set_event_loop(loop)
 
-    if not QtWidgets.QSystemTrayIcon.isSystemTrayAvailable():
-        QtWidgets.QMessageBox.critical(None, "Systray", "I couldn't detect any system tray on this system.")
-        sys.exit(1)
+    # if not QtWidgets.QSystemTrayIcon.isSystemTrayAvailable():
+    #     QtWidgets.QMessageBox.critical(None, "Systray", "I couldn't detect any system tray on this system.")
+    #     sys.exit(1)
 
     QtWidgets.QApplication.setQuitOnLastWindowClosed(False)
 
     window = Window()
     window.show()
 
-    # After teh progreem endz:
-    sys.exit(app.exec_()) # Goodbye World
+    with loop:
+        loop.run_forever()
+
+if __name__ == '__main__':
+    __main__()

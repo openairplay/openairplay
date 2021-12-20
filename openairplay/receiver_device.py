@@ -1,10 +1,14 @@
 
+import plistlib
+import asyncio
 from typing import List
 from enum import Flag
-import plistlib
 
 import requests
 import zeroconf
+import pyatv
+from pyatv.conf import AppleTV
+from pyatv.protocols.airplay.remote_control import RemoteControl as AirPlayRemoteControl
 
 from . import log
 from .utils import SimpleRepr
@@ -96,7 +100,14 @@ class AirplayReceiverStatus(Flag):
 class AirplayReceiver(SimpleRepr):
     def __init__(
             self, name: str, service_info: zeroconf.ServiceInfo,
+            loop: asyncio.events.AbstractEventLoop = None,
         ):
+        if not loop:
+            try:
+                loop = asyncio.get_running_loop()
+            except RuntimeError as e:
+                loop = asyncio.new_event_loop()
+        self.loop = loop
         self.name = name
         self.service_info = service_info
         self.service_properties = {
@@ -105,6 +116,25 @@ class AirplayReceiver(SimpleRepr):
 
         # for name, value in kwargs.items():
         #     setattr(self, name, value)
+
+    def _scan_for_device_sync(self):
+        fut_res = self._scan_for_device()
+        return asyncio.run(fut_res)
+
+    async def _scan_for_device(self) -> AppleTV:
+        """This method *should* find the pyatv device for this Receiver"""
+        devices = await pyatv.scan(
+            loop=self.loop,
+            # TODO https://github.com/postlund/pyatv/issues/1157
+            # add ipv6 discovery
+            hosts=self._get_ipv4_addresses(),
+        )
+        log.debug(f"scan for {self.friendly_name} returned: {devices}")
+        if len(devices) > 1:
+            raise RuntimeWarning(f"scan for a single AirplayReceiver found multiple pyatv BaseConfigs")
+        elif len(devices) == 0:
+            raise RuntimeError(f"could not locate device via pyatv")
+        return devices[0]
 
     def parse_service_properties(self, **kwargs):
         # TODO set defaults for following expected properties and convert types
@@ -164,6 +194,9 @@ class AirplayReceiver(SimpleRepr):
 
     def _get_ip_addresses(self) -> List:
         return self.service_info.parsed_addresses()
+
+    def _get_ipv4_addresses(self) -> List:
+        return self.service_info.addresses
 
     @property
     def ip_address(self):

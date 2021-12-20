@@ -30,6 +30,7 @@ setup(
         "bpython",
         "zeroconf",
         "PyQt5",
+        "pyatv",
     ],
     entry_points={
         'console_scripts': [
