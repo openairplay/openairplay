@@ -26,8 +26,8 @@ class OpenAirPlayMirroringClient(SimpleRepr):
     async def start(self):
         # pairing process
         log.debug(f"setup mirroring session with {self.receiver.name} ...")
-        info = self.receiver._get_server_info()
-        rc = self.receiver._get_pyatv_rtsp_session()
+        info = await self.receiver._get_server_info()
+        rc = await self.receiver._get_pyatv_rtsp_session()
         # await rc.exchange(
         #     "POST", "/pair-setup",
         #     content_type="application/octet-stream",
