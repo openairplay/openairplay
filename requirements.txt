@@ -2,3 +2,5 @@ PyQt5
 zeroconf
 coloredlogs
 requests
+pyatv
+qasync
